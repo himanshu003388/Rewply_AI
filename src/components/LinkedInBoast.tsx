@@ -1,8 +1,21 @@
 'use client'
 
 import React, { useState } from 'react'
-import { Linkedin, Sparkles, Copy, Check, Share2 } from 'lucide-react'
+import { Sparkles, Copy, Check, Share2 } from 'lucide-react'
 import { Review } from '@/types/database.types'
+
+function LinkedInIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.2V10.9H6.46M7.83 6.45a1.63 1.63 0 1 0 0 3.26 1.63 1.63 0 0 0 0-3.26Z" />
+    </svg>
+  )
+}
 
 interface LinkedInBoastProps {
   reviews: Review[]
@@ -44,7 +57,7 @@ We are constantly monitoring our reviews and using AI to identify areas where we
     <div className="glass p-6 rounded-3xl border border-slate-200 dark:border-white/5 shadow-sm space-y-6 hover-lift">
       <div className="flex items-center gap-3">
         <div className="p-2.5 rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20 shadow-sm shadow-blue-500/20">
-          <Linkedin className="w-5 h-5" />
+          <LinkedInIcon className="w-5 h-5" />
         </div>
         <div>
           <div className="flex items-center gap-2">
@@ -74,7 +87,7 @@ We are constantly monitoring our reviews and using AI to identify areas where we
                 </>
               ) : (
                 <>
-                  <Linkedin className="w-4 h-4" />
+                  <LinkedInIcon className="w-4 h-4" />
                   Generate LinkedIn Post
                 </>
               )}

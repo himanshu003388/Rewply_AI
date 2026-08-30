@@ -111,7 +111,7 @@ export function Sidebar({
       >
         {/* Top Header / Brand */}
         <div>
-          <div className="h-16 px-4 flex items-center justify-between border-b border-slate-200/80 dark:border-white/5">
+          <div className={`h-16 flex items-center border-b border-slate-200/80 dark:border-white/5 transition-all ${isCollapsed && !isMobileOpen ? 'justify-center px-0' : 'justify-between px-4'}`}>
             <div className="flex items-center gap-3 overflow-hidden">
               <div className="flex-shrink-0 flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 via-indigo-600 to-purple-600 shadow-md shadow-indigo-500/20 border border-indigo-400/30">
                 <Sparkles className="w-5 h-5 text-white animate-pulse" />
@@ -133,31 +133,34 @@ export function Sidebar({
               )}
             </div>
 
-            {/* Desktop Collapse Toggle / Mobile Close Button */}
-            <div className="flex items-center">
-              <button
-                onClick={onCloseMobile}
-                className="md:hidden p-1.5 rounded-lg text-slate-500 hover:text-slate-800 dark:text-gray-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-gray-800"
-                aria-label="Close sidebar"
-              >
-                <X className="w-5 h-5" />
-              </button>
-
-              <button
-                onClick={onToggleCollapse}
-                className="hidden md:flex items-center justify-center p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:text-gray-500 dark:hover:text-gray-200 hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
-                title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-                aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-              >
-                {isCollapsed ? (
-                  <ChevronRight className="w-4 h-4" />
-                ) : (
-                  <ChevronLeft className="w-4 h-4" />
-                )}
-              </button>
-            </div>
+            {/* Mobile Close Button */}
+            {(!isCollapsed || isMobileOpen) && (
+              <div className="flex items-center">
+                <button
+                  onClick={onCloseMobile}
+                  className="md:hidden p-1.5 rounded-lg text-slate-500 hover:text-slate-800 dark:text-gray-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-gray-800"
+                  aria-label="Close sidebar"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            )}
           </div>
         </div>
+
+        {/* Desktop Collapse Toggle Floating Button */}
+        <button
+          onClick={onToggleCollapse}
+          className="hidden md:flex absolute -right-3.5 top-[1.125rem] z-50 items-center justify-center w-7 h-7 rounded-full bg-white dark:bg-[#070a12] border border-slate-200 dark:border-white/10 text-slate-400 hover:text-slate-700 dark:text-gray-400 dark:hover:text-white shadow-sm transition-all hover:scale-110"
+          title={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        >
+          {isCollapsed ? (
+            <ChevronRight className="w-4 h-4 ml-0.5" />
+          ) : (
+            <ChevronLeft className="w-4 h-4 mr-0.5" />
+          )}
+        </button>
 
         {/* Navigation Section */}
         <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1.5">
