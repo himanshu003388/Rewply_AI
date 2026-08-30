@@ -22,12 +22,22 @@ function getApiKey(): string {
 }
 
 /**
+ * Model aliases & replacements for deprecated/retired Gemini model identifiers
+ */
+const MODEL_MAPPINGS: Record<string, string> = {
+  'gemini-1.5-flash': 'gemini-2.5-flash',
+  'gemini-1.5-flash-latest': 'gemini-2.5-flash',
+  'gemini-1.5-pro': 'gemini-2.5-pro',
+}
+
+/**
  * Get configured Generative Model instance
  */
 export function getGeminiModel(modelName?: string): GenerativeModel {
   const apiKey = getApiKey()
   const genAI = new GoogleGenerativeAI(apiKey)
-  const selectedModel = modelName || process.env.GEMINI_MODEL || 'gemini-1.5-flash'
+  const rawModel = (modelName || process.env.GEMINI_MODEL || 'gemini-2.5-flash').trim()
+  const selectedModel = MODEL_MAPPINGS[rawModel] || rawModel
 
   return genAI.getGenerativeModel({
     model: selectedModel,

@@ -663,7 +663,7 @@ export default function DashboardPage() {
                     </div>
                     <h3 className="text-sm font-bold text-white tracking-tight">AI Insights</h3>
                   </div>
-                  <span className="text-xs text-indigo-400 font-semibold">Gemini 1.5</span>
+                  <span className="text-xs text-indigo-400 font-semibold">Gemini 2.5</span>
                 </div>
 
                 <AIInsightsSection
