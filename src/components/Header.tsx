@@ -102,18 +102,27 @@ export function Header({
               <span>{!isUsingFallback ? 'Live' : 'Ready'}</span>
             </div>
 
-            {/* Dark / Light Mode Toggle Button */}
+            {/* Dark / Light Mode Toggle Button with Smooth Transform Animation */}
             <button
               onClick={toggleTheme}
-              className="flex items-center justify-center w-9 h-9 rounded-xl border border-slate-200 hover:border-slate-300 dark:border-gray-800 dark:hover:border-gray-700 bg-slate-100 hover:bg-slate-200/80 dark:bg-gray-900 dark:hover:bg-gray-800 text-slate-700 dark:text-gray-200 shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="relative flex items-center justify-center w-9 h-9 rounded-xl border border-slate-200 hover:border-slate-300 dark:border-gray-800 dark:hover:border-gray-700 bg-slate-100 hover:bg-slate-200/80 dark:bg-gray-900 dark:hover:bg-gray-800 text-slate-700 dark:text-gray-200 shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 overflow-hidden"
               title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
               aria-label={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             >
-              {isDark ? (
-                <Sun className="w-4 h-4 text-amber-400 fill-amber-400/20 transition-transform duration-300 rotate-0 hover:rotate-45" />
-              ) : (
-                <Moon className="w-4 h-4 text-indigo-600 fill-indigo-600/20 transition-transform duration-300 -rotate-12 hover:rotate-0" />
-              )}
+              <Sun
+                className={`w-4 h-4 text-amber-400 fill-amber-400/20 absolute transition-all duration-300 transform ${
+                  isDark
+                    ? 'rotate-0 scale-100 opacity-100'
+                    : 'rotate-90 scale-0 opacity-0'
+                }`}
+              />
+              <Moon
+                className={`w-4 h-4 text-indigo-600 fill-indigo-600/20 absolute transition-all duration-300 transform ${
+                  !isDark
+                    ? 'rotate-0 scale-100 opacity-100'
+                    : '-rotate-90 scale-0 opacity-0'
+                }`}
+              />
             </button>
           </div>
         </div>

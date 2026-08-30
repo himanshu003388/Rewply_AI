@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useEffect, useState, useRef } from 'react'
+import React, { createContext, useContext, useEffect, useState } from 'react'
 
 type Theme = 'dark' | 'light'
 
@@ -17,31 +17,25 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>('dark')
   const [mounted, setMounted] = useState(false)
-  const transitionTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     setMounted(true)
-    // Check saved theme in localStorage
-    const savedTheme = localStorage.getItem('rewply_theme') as Theme | null
-    if (savedTheme === 'light' || savedTheme === 'dark') {
-      setThemeState(savedTheme)
-      applyTheme(savedTheme, false)
-    } else {
-      setThemeState('dark')
-      applyTheme('dark', false)
+    try {
+      const savedTheme = localStorage.getItem('rewply_theme') as Theme | null
+      if (savedTheme === 'light' || savedTheme === 'dark') {
+        setThemeState(savedTheme)
+        applyThemeDirect(savedTheme)
+      } else {
+        setThemeState('dark')
+        applyThemeDirect('dark')
+      }
+    } catch {
+      applyThemeDirect('dark')
     }
   }, [])
 
-  const applyTheme = (newTheme: Theme, withTransition: boolean = true) => {
+  const applyThemeDirect = (newTheme: Theme) => {
     const root = document.documentElement
-
-    if (withTransition) {
-      if (transitionTimeoutRef.current) {
-        clearTimeout(transitionTimeoutRef.current)
-      }
-      root.classList.add('theme-transition')
-    }
-
     if (newTheme === 'dark') {
       root.classList.add('dark')
       root.classList.remove('light')
@@ -53,18 +47,22 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       root.setAttribute('data-theme', 'light')
       root.style.colorScheme = 'light'
     }
-
-    if (withTransition) {
-      transitionTimeoutRef.current = setTimeout(() => {
-        root.classList.remove('theme-transition')
-      }, 350)
-    }
   }
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme)
-    localStorage.setItem('rewply_theme', newTheme)
-    applyTheme(newTheme, true)
+    try {
+      localStorage.setItem('rewply_theme', newTheme)
+    } catch {}
+
+    // Use document.startViewTransition for ultra-smooth GPU hardware-accelerated transition if supported
+    if (typeof document !== 'undefined' && 'startViewTransition' in document) {
+      document.startViewTransition(() => {
+        applyThemeDirect(newTheme)
+      })
+    } else {
+      applyThemeDirect(newTheme)
+    }
   }
 
   const toggleTheme = () => {
