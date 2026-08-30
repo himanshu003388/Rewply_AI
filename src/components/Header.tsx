@@ -83,23 +83,17 @@ export function Header({
               <span>{!isUsingFallback ? 'Supabase Live' : 'Database Ready'}</span>
             </div>
 
-            {/* Dark / Light Mode Toggle Button (Corner Position) */}
+            {/* Dark / Light Mode Toggle Button (Icon Only) */}
             <button
               onClick={toggleTheme}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all duration-200 bg-slate-100 hover:bg-slate-200 text-slate-700 border-slate-300 dark:bg-gray-900 dark:hover:bg-gray-800 dark:text-gray-200 dark:border-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ml-1"
+              className="flex items-center justify-center w-9 h-9 rounded-xl border border-slate-200 hover:border-slate-300 dark:border-gray-800 dark:hover:border-gray-700 bg-slate-100 hover:bg-slate-200/80 dark:bg-gray-900 dark:hover:bg-gray-800 text-slate-700 dark:text-gray-200 shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 ml-1"
               title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-              aria-label="Toggle Dark and Light Mode"
+              aria-label={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             >
               {isDark ? (
-                <>
-                  <Sun className="w-3.5 h-3.5 text-amber-400 fill-amber-400/20 transition-transform duration-300 rotate-0 hover:rotate-45" />
-                  <span className="hidden sm:inline">Light Mode</span>
-                </>
+                <Sun className="w-4 h-4 text-amber-400 fill-amber-400/20 transition-transform duration-300 rotate-0 hover:rotate-45" />
               ) : (
-                <>
-                  <Moon className="w-3.5 h-3.5 text-indigo-600 fill-indigo-600/20 transition-transform duration-300 -rotate-12 hover:rotate-0" />
-                  <span className="hidden sm:inline">Dark Mode</span>
-                </>
+                <Moon className="w-4 h-4 text-indigo-600 fill-indigo-600/20 transition-transform duration-300 -rotate-12 hover:rotate-0" />
               )}
             </button>
           </div>
