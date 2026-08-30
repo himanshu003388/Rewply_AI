@@ -5,11 +5,11 @@
  */
 
 export interface CategorizedReview {
-  id: string;
-  customer_name: string;
-  review_text: string;
-  rating: number;
-  platform: string;
+  id?: string;
+  customer_name?: string;
+  review_text?: string;
+  rating?: number;
+  platform?: string;
   category: string;
   subcategory?: string;
   sentiment: "positive" | "negative" | "neutral";
@@ -17,6 +17,16 @@ export interface CategorizedReview {
     primary_issue: string;
     confidence: number;
   };
+}
+
+export interface ReviewInput {
+  id?: string;
+  customer_name?: string;
+  review_text?: string;
+  rating?: number;
+  platform?: string;
+  analysis?: string | { primary_issue?: string; issue?: string } | null;
+  [key: string]: unknown;
 }
 
 export interface CategoryStats {
@@ -59,139 +69,109 @@ const CATEGORY_KEYWORDS: Record<string, { keywords: string[]; priority: number }
     keywords: [
       "delivery",
       "late",
-      "delay",
-      "arrived",
+      "delayed",
       "driver",
-      "drop-off",
-      "cold",
-      "package",
-      "tracking",
       "courier",
-      "dropped",
-      "mishandled",
-      "wait",
-      "slow",
-      "stationary",
-      "route",
-      "navigation",
-      "placement",
-      "marked complete",
-      "sidewalk",
-      "rude",
-      "unprofessional",
-      "seal",
-      "tampered",
-      "smoke odor",
+      "wrong address",
+      "cold food",
+      "spilled",
+      "missing items",
+      "slow delivery",
+      "never arrived",
+      "tracking",
+      "eta",
+      "wait time",
+      "hour",
+      "minutes late",
+      "cancelled delivery",
     ],
     priority: 1,
   },
   "Food Quality Issues": {
     keywords: [
-      "undercooked",
-      "raw",
-      "stale",
-      "burnt",
-      "missing",
-      "toppings",
-      "dry",
-      "rubbery",
+      "cold",
       "soggy",
-      "greasy",
-      "oil",
-      "plastic",
-      "foreign object",
-      "allergen",
-      "gluten",
-      "melted",
-      "disintegrated",
-      "sauce overload",
-      "texture",
+      "burnt",
+      "stale",
+      "taste",
+      "flavor",
+      "raw",
+      "undercooked",
+      "overcooked",
       "quality",
-      "consistency",
-      "cooking",
-      "grilled",
-      "breading",
-      "cheese",
+      "freshness",
+      "portion",
+      "hair",
+      "foreign object",
+      "bad meat",
+      "greasy",
+      "inedible",
+      "sick",
+      "food poisoning",
     ],
     priority: 1,
   },
   "Billing Problems": {
     keywords: [
-      "charged",
+      "charge",
+      "charged twice",
       "refund",
-      "promo",
-      "discount",
-      "fee",
-      "card",
-      "payment",
-      "subscription",
-      "billing",
+      "expensive",
       "price",
-      "receipt",
-      "cancelled",
-      "duplicate",
-      "gift card",
-      "wallet",
-      "deceptive pricing",
-      "hidden fee",
+      "fee",
       "tip",
+      "receipt",
+      "discount",
+      "promo code",
+      "coupon",
+      "billing",
+      "payment",
+      "overcharge",
+      "hidden fee",
     ],
-    priority: 1,
+    priority: 2,
   },
   "App/Technical Issues": {
     keywords: [
       "app",
       "crash",
       "bug",
-      "technical",
       "error",
       "login",
-      "otp",
-      "sms",
-      "filter",
-      "search",
-      "tracking",
-      "notification",
-      "websocket",
-      "authentication",
-      "session",
-      "cart",
-      "checkout",
-      "apple pay",
-      "ios",
+      "loading",
+      "freeze",
       "glitch",
-      "allergen filter",
-      "reorder",
+      "not working",
+      "button",
+      "checkout failed",
+      "payment failed",
+      "location",
+      "gps",
+      "notification",
     ],
-    priority: 1,
+    priority: 2,
   },
   "Positive Feedback": {
     keywords: [
-      "best",
-      "excellent",
-      "love",
+      "great",
       "amazing",
       "delicious",
+      "fast",
+      "best",
+      "love",
       "perfect",
-      "great",
-      "fantastic",
+      "excellent",
       "wonderful",
-      "impressed",
-      "grateful",
-      "loyal",
-      "happy",
-      "satisfied",
-      "thank",
-      "appreciate",
-      "saved",
-      "consistent",
-      "delighted",
-      "enthusiastic",
-      "piping hot",
-      "accurate",
-      "crispy",
-      "juicy",
+      "friendly",
+      "hot",
       "fresh",
+      "recommended",
+      "favorite",
+      "awesome",
+      "good job",
+      "thank you",
+      "tasty",
+      "quick",
       "convenient",
     ],
     priority: 0,
@@ -202,13 +182,13 @@ const CATEGORY_KEYWORDS: Record<string, { keywords: string[]; priority: number }
  * Categorize a single review based on keywords and content analysis
  */
 export function categorizeReview(
-  review: any
+  review: ReviewInput
 ): { category: string; confidence: number; primary_issue: string } {
   const text = (review.review_text || "").toLowerCase();
   const rating = review.rating || 0;
 
   // Check sentiment first based on rating
-  let isSentimentPositive = rating >= 4;
+  const isSentimentPositive = rating >= 4;
 
   // Score each category based on keyword matches
   const categoryScores: Record<string, number> = {};
@@ -251,10 +231,10 @@ export function categorizeReview(
     try {
       const analysisObj = JSON.parse(review.analysis);
       primaryIssue = analysisObj.issue || analysisObj.primary_issue || primaryIssue;
-    } catch (e) {
+    } catch {
       primaryIssue = extractPrimaryIssue(text);
     }
-  } else if (review.analysis?.primary_issue) {
+  } else if (review.analysis && typeof review.analysis === "object" && "primary_issue" in review.analysis && review.analysis.primary_issue) {
     primaryIssue = review.analysis.primary_issue;
   } else {
     primaryIssue = extractPrimaryIssue(text);
@@ -304,7 +284,7 @@ function extractPrimaryIssue(text: string): string {
 /**
  * Determine sentiment based on rating and analysis
  */
-function getSentiment(review: any): "positive" | "negative" | "neutral" {
+function getSentiment(review: ReviewInput): "positive" | "negative" | "neutral" {
   const rating = review.rating || 0;
 
   if (rating >= 4) {
@@ -319,7 +299,7 @@ function getSentiment(review: any): "positive" | "negative" | "neutral" {
 /**
  * Main categorization function - processes all reviews
  */
-export function categorizeAllReviews(reviews: any[]): CategorizationResult {
+export function categorizeAllReviews(reviews: ReviewInput[]): CategorizationResult {
   const categorizedReviews: CategorizedReview[] = [];
   const categoryStats: Record<string, CategoryStats> = {};
 
@@ -356,7 +336,6 @@ export function categorizeAllReviews(reviews: any[]): CategorizationResult {
   };
 
   // Categorize each review
-  let totalRating = 0;
   const issueFrequency: Record<string, number> = {};
   const overallSentiment = { positive: 0, negative: 0, neutral: 0 };
 
@@ -386,7 +365,7 @@ export function categorizeAllReviews(reviews: any[]): CategorizationResult {
       categoryStats[category].sentiment_breakdown[sentiment]++;
 
       // Add example if we have room
-      if (categoryStats[category].examples.length < 2) {
+      if (categoryStats[category].examples.length < 2 && review.review_text) {
         categoryStats[category].examples.push(
           review.review_text.substring(0, 80) + "..."
         );
@@ -398,8 +377,6 @@ export function categorizeAllReviews(reviews: any[]): CategorizationResult {
       issueFrequency[primary_issue] = (issueFrequency[primary_issue] || 0) + 1;
     }
 
-    // Update ratings
-    totalRating += review.rating;
     overallSentiment[sentiment]++;
   }
 
@@ -411,18 +388,18 @@ export function categorizeAllReviews(reviews: any[]): CategorizationResult {
       stats.count > 0
         ? categorizedReviews
             .filter((r) => r.category === category)
-            .reduce((sum, r) => sum + r.rating, 0) / stats.count
+            .reduce((sum, r) => sum + (r.rating || 0), 0) / stats.count
         : 0;
   }
 
   // Get top issues
   const mostCommonIssues = Object.entries(issueFrequency)
-    .sort(([_, a], [__, b]) => b - a)
+    .sort(([, a], [, b]) => b - a)
     .slice(0, 10)
     .map(([issue, frequency]) => ({
       issue,
       frequency,
-      severity: frequency >= 5 ? "high" : frequency >= 3 ? "medium" : "low",
+      severity: (frequency >= 5 ? "high" : frequency >= 3 ? "medium" : "low") as "critical" | "high" | "medium" | "low",
     }));
 
   // Generate summary
@@ -471,7 +448,7 @@ function generateSummary(
   // Top categories
   summary += `### Distribution by Category\n`;
   const sortedCategories = Object.entries(categoryStats)
-    .sort(([_, a], [__, b]) => b.count - a.count)
+    .sort(([, a], [, b]) => b.count - a.count)
     .slice(0, 5);
 
   for (const [categoryName, stats] of sortedCategories) {
@@ -490,7 +467,7 @@ function generateSummary(
   // Overall sentiment narrative
   summary += `\n### Overall Sentiment Analysis\n`;
 
-  if (positivePercent > 50) {
+  if (Number(positivePercent) > 50) {
     summary += `The business maintains a **positive reputation** with over ${positivePercent}% satisfaction rate. `;
     summary += `Customers praise consistent quality, fast delivery, and excellent customer service. `;
   } else {
@@ -527,8 +504,8 @@ export function formatCategoryReport(result: CategorizationResult): string {
   report += `${"-".repeat(80)}\n`;
 
   const sortedCategories = Object.entries(result.categories)
-    .sort(([_, a], [__, b]) => b.count - a.count)
-    .filter(([_, stats]) => stats.count > 0);
+    .sort(([, a], [, b]) => b.count - a.count)
+    .filter(([, stats]) => stats.count > 0);
 
   for (const [categoryName, stats] of sortedCategories) {
     report += `\n${categoryName.toUpperCase()}\n`;

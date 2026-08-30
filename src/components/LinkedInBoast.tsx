@@ -46,11 +46,8 @@ export function LinkedInBoast({ reviews, businessName = 'BurgerHub Delivery' }: 
   const [selectedTone, setSelectedTone] = useState<PostTone>('inspiring')
   const [customNote, setCustomNote] = useState('')
   const [generatedPost, setGeneratedPost] = useState('')
-  const [postHeadline, setPostHeadline] = useState('')
-  const [hashtags, setHashtags] = useState<string[]>([])
   const [isGenerating, setIsGenerating] = useState(false)
   const [isCopied, setIsCopied] = useState(false)
-  const [activeTab, setActiveTab] = useState<'editor' | 'preview'>('preview')
 
   const positiveReviews = reviews.filter((r) => r.rating >= 4 || r.analysis?.sentiment === 'positive').slice(0, 3)
   const featuredReview = positiveReviews[0] || reviews[0]
@@ -98,8 +95,6 @@ export function LinkedInBoast({ reviews, businessName = 'BurgerHub Delivery' }: 
       const data = await res.json()
       if (data.success && data.result) {
         setGeneratedPost(data.result.post)
-        setPostHeadline(data.result.headline || '')
-        setHashtags(data.result.hashtags || [])
       } else {
         // Fallback
         generateLocalFallback()
@@ -177,8 +172,6 @@ A massive shoutout to our community for trusting us! ❤️
     }
 
     setGeneratedPost(template)
-    setPostHeadline(`🚀 Customer Success & Operational Excellence at ${businessName}`)
-    setHashtags(['#CustomerObsession', '#SmallBusiness', '#CustomerExperience', '#AIForBusiness', '#Leadership'])
   }
 
   const handleCopy = () => {

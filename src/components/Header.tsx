@@ -11,7 +11,6 @@ import {
   MapPin,
   Keyboard,
   ChevronDown,
-  Building,
 } from 'lucide-react'
 import { useTheme } from '@/lib/providers/theme-provider'
 import { KeyboardShortcutsModal } from './KeyboardShortcutsModal'

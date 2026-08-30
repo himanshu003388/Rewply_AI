@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 interface CategoryStats {
   name: string;
@@ -32,15 +32,6 @@ interface CategorizationResult {
   }>;
   summary: string;
 }
-
-const COLORS = {
-  "Delivery Issues": "#FF6B6B",
-  "Food Quality Issues": "#FFA500",
-  "Billing Problems": "#FFD93D",
-  "App/Technical Issues": "#6BCB77",
-  "Positive Feedback": "#4D96FF",
-  Other: "#9D84B7",
-};
 
 const SENTIMENT_COLORS = {
   positive: "#4D96FF",
@@ -93,7 +84,7 @@ export default function ReviewCategorization() {
 
   // Prepare chart data
   const categoryChartData = Object.entries(data.categories)
-    .filter(([_, stats]) => stats.count > 0)
+    .filter(([, stats]) => stats.count > 0)
     .map(([name, stats]) => ({
       name,
       count: stats.count,
@@ -106,12 +97,6 @@ export default function ReviewCategorization() {
     { name: "Negative", value: data.overall_sentiment.negative },
     { name: "Neutral", value: data.overall_sentiment.neutral },
   ];
-
-  const issuesChartData = data.most_common_issues.slice(0, 8).map((issue) => ({
-    issue: issue.issue.substring(0, 20) + (issue.issue.length > 20 ? "..." : ""),
-    frequency: issue.frequency,
-    severity: issue.severity,
-  }));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-8">
@@ -299,21 +284,23 @@ function MetricCard({ title, value, subtext, icon = "📊", color = "bg-slate-50
   );
 }
 
+interface CustomLabelProps {
+  cx?: number;
+  cy?: number;
+  midAngle?: number;
+  innerRadius?: number;
+  outerRadius?: number;
+  percent?: number;
+}
+
 function renderCustomLabel({
-  cx,
-  cy,
-  midAngle,
-  innerRadius,
-  outerRadius,
-  percent,
-}: {
-  cx: number;
-  cy: number;
-  midAngle: number;
-  innerRadius: number;
-  outerRadius: number;
-  percent: number;
-}) {
+  cx = 0,
+  cy = 0,
+  midAngle = 0,
+  innerRadius = 0,
+  outerRadius = 0,
+  percent = 0,
+}: CustomLabelProps) {
   const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
   const x = cx + radius * Math.cos((-midAngle * Math.PI) / 180);
   const y = cy + radius * Math.sin((-midAngle * Math.PI) / 180);

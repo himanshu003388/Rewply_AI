@@ -430,7 +430,6 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const format = searchParams.get("format") || "json";
-    const includeSummary = searchParams.get("summary") !== "false";
 
     // Run categorization
     const result: CategorizationResult = categorizeAllReviews(REVIEWS_DATA);

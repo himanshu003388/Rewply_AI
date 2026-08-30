@@ -438,8 +438,8 @@ export async function runReviewCategorization(): Promise<void> {
   console.log("=".repeat(80));
 
   const sortedCategories = Object.entries(result.categories)
-    .sort(([_, a], [__, b]) => b.count - a.count)
-    .filter(([_, stats]) => stats.count > 0);
+    .sort(([, a], [, b]) => b.count - a.count)
+    .filter(([, stats]) => stats.count > 0);
 
   for (const [categoryName, stats] of sortedCategories) {
     console.log(`\n${categoryName.toUpperCase()}`);
@@ -464,4 +464,5 @@ if (require.main === module) {
   runReviewCategorization().catch(console.error);
 }
 
-export default { runReviewCategorization, REVIEWS_DATA };
+const runner = { runReviewCategorization, REVIEWS_DATA };
+export default runner;
