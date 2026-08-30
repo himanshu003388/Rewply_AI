@@ -1,32 +1,31 @@
 'use client'
 
-import React, { useState, useMemo, useEffect } from 'react'
+import React, { useState, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Header } from '@/components/Header'
 import { Sidebar, ViewMode } from '@/components/Sidebar'
 import { MetricCards } from '@/components/MetricCards'
-import { AnalyticsCharts } from '@/components/AnalyticsCharts'
+
 import { ReviewInboxFilters, QuickFilter, SortOption } from '@/components/ReviewInboxFilters'
 import { ReviewList } from '@/components/ReviewList'
 import { ReviewModal } from '@/components/ReviewModal'
 import { RecurringProblems } from '@/components/RecurringProblems'
-import { AIInsightsSection } from '@/components/AIInsightsSection'
-import { AIActionCenter } from '@/components/AIActionCenter'
+
 import { AskYourReviews } from '@/components/AskYourReviews'
 import { SimulateReviewButton } from '@/components/SimulateReviewButton'
 import { DemoModeGuide } from '@/components/DemoModeGuide'
-import { getReviews, getIssues, updateReviewStatus } from '@/lib/api/reviews'
+import { getReviews, updateReviewStatus } from '@/lib/api/reviews'
 import { Review } from '@/types/database.types'
-import { SupportedTone, BusinessInsightsData } from '@/lib/ai/types'
+import { SupportedTone } from '@/lib/ai/types'
 import { ReputationHealthScoreResult } from '@/lib/metrics/health-score'
-import { ActionStatus, AIActionItem } from '@/lib/api/actions'
-import { BarChart3, Inbox, Lightbulb } from 'lucide-react'
+
+
 
 export default function DashboardPage() {
   const queryClient = useQueryClient()
 
   // Navigation & View Mode State
-  const [viewMode, setViewMode] = useState<ViewMode>('3-column')
+  const [viewMode, setViewMode] = useState<ViewMode>('inbox')
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false)
 
@@ -45,9 +44,7 @@ export default function DashboardPage() {
   const [selectedPlatform, setSelectedPlatform] = useState('all')
   const [sortBy, setSortBy] = useState<SortOption>('highest_priority')
 
-  // AI Business Insights State
-  const [insightsData, setInsightsData] = useState<BusinessInsightsData | null>(null)
-  const [isGeneratingInsights, setIsGeneratingInsights] = useState(false)
+
 
   // 1. Fetch all reviews from Supabase / Data layer
   const {
@@ -80,21 +77,7 @@ export default function DashboardPage() {
     },
   })
 
-  // 4. Fetch Prioritized AI Action Center Items
-  const { data: actionsData, isLoading: isActionsLoading } = useQuery({
-    queryKey: ['prioritized_actions'],
-    queryFn: async () => {
-      const res = await fetch('/api/actions')
-      const json = await res.json()
-      return json.actions || []
-    },
-  })
 
-  // 5. Fetch raw issues
-  const { data: issuesResponse } = useQuery({
-    queryKey: ['issues'],
-    queryFn: () => getIssues(),
-  })
 
   // Callback when a new review is simulated
   const handleReviewSimulated = () => {
@@ -102,14 +85,12 @@ export default function DashboardPage() {
     queryClient.invalidateQueries({ queryKey: ['health_score'] })
     queryClient.invalidateQueries({ queryKey: ['recurring_issues'] })
     queryClient.invalidateQueries({ queryKey: ['prioritized_actions'] })
-    queryClient.invalidateQueries({ queryKey: ['metrics'] })
-    handleGenerateInsights()
   }
 
   // Demo Mode Handlers
   const handleDemoStepChange = (stepNumber: number) => {
     if (stepNumber === 1) {
-      setViewMode('3-column')
+      setViewMode('inbox')
       setActiveFilter('all')
       setSortBy('highest_priority')
     } else if (stepNumber === 2) {
@@ -137,13 +118,13 @@ export default function DashboardPage() {
       setViewMode('problems')
     } else if (stepNumber === 7) {
       setIsModalOpen(false)
-      setViewMode('insights')
+      setViewMode('inbox')
     } else if (stepNumber === 8) {
       setIsModalOpen(false)
       setViewMode('assistant')
     } else if (stepNumber === 9) {
       setIsModalOpen(false)
-      setViewMode('actions')
+      setViewMode('inbox')
     }
   }
 
@@ -169,53 +150,14 @@ export default function DashboardPage() {
     queryClient.invalidateQueries({ queryKey: ['prioritized_actions'] })
     handleResetFilters()
     setIsModalOpen(false)
-    setViewMode('3-column')
+    setViewMode('inbox')
   }
 
-  // Mutation: Update AI Action Status
-  const updateActionStatusMutation = useMutation({
-    mutationFn: async ({ actionId, status }: { actionId: string; status: ActionStatus }) => {
-      const res = await fetch('/api/actions/status', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ actionId, status }),
-      })
-      return res.json()
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['prioritized_actions'] })
-    },
-  })
 
-  const handleUpdateActionStatus = async (actionId: string, status: ActionStatus) => {
-    await updateActionStatusMutation.mutateAsync({ actionId, status })
-  }
 
-  // Function to generate AI business insights
-  const handleGenerateInsights = async () => {
-    setIsGeneratingInsights(true)
-    try {
-      const res = await fetch('/api/insights/generate', { method: 'POST' })
-      const json = await res.json()
-      if (json.success && json.insights) {
-        setInsightsData(json.insights)
-      } else {
-        console.warn('AI Insights generation returned fallback or warning:', json.error)
-      }
-    } catch (err) {
-      console.error('Failed to fetch AI insights:', err)
-    } finally {
-      setIsGeneratingInsights(false)
-    }
-  }
 
-  // Pre-load insights on first render if empty
-  useEffect(() => {
-    if (!insightsData && reviewsResponse?.data && reviewsResponse.data.length > 0) {
-      handleGenerateInsights()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reviewsResponse?.data?.length])
+
+
 
   // 6. Mutation: Analyze Review via Gemini Agent API
   const analyzeMutation = useMutation({
@@ -372,8 +314,6 @@ export default function DashboardPage() {
   }
 
   const allReviews = useMemo(() => reviewsResponse?.data || [], [reviewsResponse?.data])
-  const issues = useMemo(() => issuesResponse?.data || [], [issuesResponse?.data])
-  const isUsingFallback = reviewsResponse?.isUsingFallback ?? true
 
   // Computed summary counts for sidebar badges
   const counts = useMemo(() => {
@@ -382,14 +322,10 @@ export default function DashboardPage() {
     const critical = allReviews.filter(
       (r) => r.analysis?.priority === 'critical' || r.analysis?.priority === 'P1'
     ).length
-    const actionsCount =
-      actionsData?.filter((a: AIActionItem) => a.status === 'pending' || a.status === 'investigating')?.length ||
-      actionsData?.length ||
-      0
     const problemsCount = recurringIssuesData?.length || 0
 
-    return { total, unanswered, critical, actionsCount, problemsCount }
-  }, [allReviews, actionsData, recurringIssuesData])
+    return { total, unanswered, critical, problemsCount }
+  }, [allReviews, recurringIssuesData])
 
   // Filter & Sort Logic
   const filteredAndSortedReviews = useMemo(() => {
@@ -482,13 +418,9 @@ export default function DashboardPage() {
   }, [allReviews, selectedReview])
 
   const viewTitles: Record<ViewMode, string> = {
-    '3-column': 'Command Center Overview',
-    'inbox': 'Review Inbox & Triage',
-    'actions': 'AI Prioritized Action Center',
-    'problems': 'Recurring Problems Intelligence',
-    'insights': 'AI Executive Insights',
-    'assistant': 'Ask Your Reviews Assistant',
-    'analytics': 'Operational Analytics & Telemetry',
+    'inbox': 'Review Inbox',
+    'problems': 'Top Problems',
+    'assistant': 'Ask AI',
   }
 
   return (
@@ -504,7 +436,6 @@ export default function DashboardPage() {
         totalReviews={counts.total}
         unansweredReviews={counts.unanswered}
         criticalReviews={counts.critical}
-        actionsCount={counts.actionsCount}
         problemsCount={counts.problemsCount}
       />
 
@@ -512,7 +443,6 @@ export default function DashboardPage() {
       <div className="flex-1 flex flex-col min-w-0 pb-28">
         {/* TOP HEADER */}
         <Header
-          isUsingFallback={isUsingFallback}
           isDemoModeActive={isDemoModeActive}
           onToggleDemoMode={() => setIsDemoModeActive(!isDemoModeActive)}
           onOpenMobileSidebar={() => setIsMobileSidebarOpen(true)}
@@ -540,8 +470,8 @@ export default function DashboardPage() {
                 )}
               </div>
               <p className="text-xs sm:text-sm text-slate-500 dark:text-gray-400">
-                Automated multi-channel review triage, root-cause intelligence, and instant response studio for{' '}
-                <strong className="text-slate-800 dark:text-gray-200">BurgerHub Delivery</strong>.
+                Manage your online reviews and fix recurring issues for{' '}
+                <strong className="text-slate-800 dark:text-gray-200">Your Business</strong>.
               </p>
             </div>
           </div>
@@ -555,116 +485,8 @@ export default function DashboardPage() {
             />
           </section>
 
-          {/* PROMINENT AI ACTION CENTER SECTION (Overview Mode & Dedicated Mode) */}
-          {(viewMode === '3-column' || viewMode === 'actions') && (
-            <section aria-label="AI Action Center" className="pt-2">
-              <AIActionCenter
-                actions={actionsData || []}
-                onUpdateStatus={handleUpdateActionStatus}
-                onSelectReview={handleOpenDetailsById}
-                isLoading={isActionsLoading}
-              />
-            </section>
-          )}
-
           {/* MAIN VIEW CONTENT SWITCHER */}
-          {viewMode === '3-column' ? (
-            /* Fluid SaaS 3-Column Command Center Grid */
-            <section className="space-y-8">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                {/* LEFT COLUMN: Review Inbox (5 cols on xl, full on lg) */}
-                <div className="lg:col-span-12 xl:col-span-5 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
-                        <Inbox className="w-4 h-4" />
-                      </div>
-                      <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">Review Inbox</h3>
-                    </div>
-                    <span className="text-xs text-slate-500 dark:text-gray-400 font-medium">
-                      {filteredAndSortedReviews.length} of {allReviews.length}
-                    </span>
-                  </div>
-
-                  <ReviewInboxFilters
-                    searchQuery={searchQuery}
-                    onSearchChange={setSearchQuery}
-                    activeFilter={activeFilter}
-                    onFilterChange={setActiveFilter}
-                    selectedPlatform={selectedPlatform}
-                    onPlatformChange={setSelectedPlatform}
-                    sortBy={sortBy}
-                    onSortChange={setSortBy}
-                    reviews={allReviews}
-                    onReset={handleResetFilters}
-                  />
-
-                  <ReviewList
-                    reviews={filteredAndSortedReviews}
-                    onOpenDetails={handleOpenDetails}
-                    onAnalyze={handleAnalyze}
-                    onGenerateResponse={handleGenerateResponseDirect}
-                    onApproveResponse={handleApprove1Click}
-                    analyzingIds={analyzingIds}
-                    generatingIds={generatingIds}
-                    approvingIds={approvingIds}
-                    isLoading={isReviewsLoading}
-                    isError={isReviewsError}
-                    onRetry={() => refetchReviews()}
-                    columns={1}
-                  />
-                </div>
-
-                {/* MIDDLE COLUMN: Recurring Problems (4 cols on xl, 6 cols on lg) */}
-                <div className="lg:col-span-6 xl:col-span-4 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="p-1.5 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
-                        <BarChart3 className="w-4 h-4" />
-                      </div>
-                      <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">Recurring Problems</h3>
-                    </div>
-                    <span className="text-xs text-slate-500 dark:text-gray-400 font-medium">
-                      {recurringIssuesData?.length || 0} Clusters
-                    </span>
-                  </div>
-
-                  <RecurringProblems
-                    issues={recurringIssuesData || []}
-                    onSelectReview={handleOpenDetailsById}
-                    isLoading={isRecurringIssuesLoading}
-                    columns={1}
-                    compact={true}
-                  />
-                </div>
-
-                {/* RIGHT COLUMN: AI Insights (3 cols on xl, 6 cols on lg) */}
-                <div className="lg:col-span-6 xl:col-span-3 space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="p-1.5 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
-                        <Lightbulb className="w-4 h-4" />
-                      </div>
-                      <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">AI Insights</h3>
-                    </div>
-                    <span className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold">Gemini 2.5</span>
-                  </div>
-
-                  <AIInsightsSection
-                    insights={insightsData}
-                    isLoading={isGeneratingInsights}
-                    onGenerateInsights={handleGenerateInsights}
-                    compact={true}
-                  />
-                </div>
-              </div>
-
-              {/* Embedded "Ask Your Reviews" Interactive Assistant */}
-              <div className="pt-2">
-                <AskYourReviews />
-              </div>
-            </section>
-          ) : viewMode === 'inbox' ? (
+          {viewMode === 'inbox' ? (
             <section className="space-y-6">
               <ReviewInboxFilters
                 searchQuery={searchQuery}
@@ -704,32 +526,9 @@ export default function DashboardPage() {
                 compact={false}
               />
             </section>
-          ) : viewMode === 'insights' ? (
-            <section className="space-y-6">
-              <AIInsightsSection
-                insights={insightsData}
-                isLoading={isGeneratingInsights}
-                onGenerateInsights={handleGenerateInsights}
-                compact={false}
-              />
-            </section>
-          ) : viewMode === 'actions' ? (
-            <section className="space-y-6">
-              <AIActionCenter
-                actions={actionsData || []}
-                onUpdateStatus={handleUpdateActionStatus}
-                onSelectReview={handleOpenDetailsById}
-                isLoading={isActionsLoading}
-              />
-            </section>
-          ) : viewMode === 'assistant' ? (
+          ) : (
             <section className="space-y-6">
               <AskYourReviews />
-            </section>
-          ) : (
-            /* Dedicated Operational Analytics & Visualizations Mode */
-            <section className="space-y-6">
-              <AnalyticsCharts reviews={allReviews} issues={issues} />
             </section>
           )}
         </main>

@@ -3,7 +3,6 @@
 import React from 'react'
 import {
   Sparkles,
-  Database,
   Play,
   Sun,
   Moon,
@@ -13,7 +12,6 @@ import {
 import { useTheme } from '@/lib/providers/theme-provider'
 
 interface HeaderProps {
-  isUsingFallback?: boolean
   isDemoModeActive?: boolean
   onToggleDemoMode?: () => void
   onOpenMobileSidebar?: () => void
@@ -22,7 +20,6 @@ interface HeaderProps {
 }
 
 export function Header({
-  isUsingFallback = true,
   isDemoModeActive = false,
   onToggleDemoMode,
   onOpenMobileSidebar,
@@ -85,22 +82,7 @@ export function Header({
             {/* Simulate Review Action Button */}
             {children}
 
-            {/* Supabase Connection Status Badge */}
-            <div
-              className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-medium ${
-                !isUsingFallback
-                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:border-emerald-800/60 dark:text-emerald-300'
-                  : 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/40 dark:border-indigo-800/50 dark:text-indigo-300'
-              }`}
-              title={
-                !isUsingFallback
-                  ? 'Connected to Live Supabase DB'
-                  : 'Running in Dataset Ready mode'
-              }
-            >
-              <Database className="w-3.5 h-3.5" />
-              <span>{!isUsingFallback ? 'Live' : 'Ready'}</span>
-            </div>
+
 
             {/* Dark / Light Mode Toggle Button with Smooth Transform Animation */}
             <button

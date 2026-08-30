@@ -2,13 +2,9 @@
 
 import React from 'react'
 import {
-  LayoutGrid,
   Inbox,
-  Zap,
   BarChart3,
-  Lightbulb,
   MessageSquare,
-  TrendingUp,
   Sparkles,
   ChevronLeft,
   ChevronRight,
@@ -17,13 +13,9 @@ import {
 } from 'lucide-react'
 
 export type ViewMode =
-  | '3-column'
   | 'inbox'
-  | 'actions'
   | 'problems'
-  | 'insights'
   | 'assistant'
-  | 'analytics'
 
 interface SidebarProps {
   currentView: ViewMode
@@ -36,7 +28,6 @@ interface SidebarProps {
   totalReviews?: number
   unansweredReviews?: number
   criticalReviews?: number
-  actionsCount?: number
   problemsCount?: number
 }
 
@@ -49,67 +40,35 @@ export function Sidebar({
   onCloseMobile,
   totalReviews = 0,
   unansweredReviews = 0,
-  actionsCount = 0,
   problemsCount = 0,
 }: SidebarProps) {
   const navItems = [
     {
-      id: '3-column' as ViewMode,
-      label: 'Overview Grid',
-      icon: LayoutGrid,
-      badge: null,
-      description: 'Unified command center',
-    },
-    {
       id: 'inbox' as ViewMode,
       label: 'Review Inbox',
       icon: Inbox,
-      badge: unansweredReviews > 0 ? `${unansweredReviews} unhandled` : `${totalReviews}`,
+      badge: unansweredReviews > 0 ? `${unansweredReviews} need reply` : `${totalReviews} total`,
       badgeColor:
         unansweredReviews > 0
           ? 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20'
           : 'bg-slate-100 dark:bg-gray-800 text-slate-600 dark:text-gray-400',
-      description: 'Stream & AI triage',
-    },
-    {
-      id: 'actions' as ViewMode,
-      label: 'AI Action Center',
-      icon: Zap,
-      badge: actionsCount > 0 ? `${actionsCount} actions` : null,
-      badgeColor: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20',
-      description: 'One-click operational tasks',
+      description: 'Read and reply to reviews',
     },
     {
       id: 'problems' as ViewMode,
-      label: 'Recurring Problems',
+      label: 'Top Problems',
       icon: BarChart3,
-      badge: problemsCount > 0 ? `${problemsCount} clusters` : null,
+      badge: problemsCount > 0 ? `${problemsCount} issues found` : null,
       badgeColor: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20',
-      description: 'Root causes & churn risks',
-    },
-    {
-      id: 'insights' as ViewMode,
-      label: 'AI Insights',
-      icon: Lightbulb,
-      badge: 'Gemini AI',
-      badgeColor: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20',
-      description: 'Strategic summaries',
+      description: 'See what needs fixing',
     },
     {
       id: 'assistant' as ViewMode,
-      label: 'Ask AI Assistant',
+      label: 'Ask AI',
       icon: MessageSquare,
       badge: null,
       badgeColor: '',
-      description: 'Natural language queries',
-    },
-    {
-      id: 'analytics' as ViewMode,
-      label: 'Analytics & Charts',
-      icon: TrendingUp,
-      badge: null,
-      badgeColor: '',
-      description: 'Telemetry visualizations',
+      description: 'Ask questions about your business',
     },
   ]
 
@@ -159,7 +118,7 @@ export function Sidebar({
                     </span>
                   </div>
                   <span className="text-[11px] text-slate-500 dark:text-gray-400 truncate">
-                    Reputation Command
+                    Review Manager
                   </span>
                 </div>
               )}

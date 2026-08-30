@@ -124,7 +124,7 @@ export function ReviewCard({
           <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-rose-500/50 to-transparent"></div>
           <div className="flex items-center gap-1.5 text-[11px] font-semibold text-rose-700 dark:text-rose-400 bg-rose-500/10 px-3 py-1.5 -mx-5 -mt-5 mb-1 border-b border-rose-200 dark:border-rose-500/10">
             <ShieldAlert className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
-            <span>Immediate Attention Required — High Operational Severity</span>
+            <span>Urgent: Please look at this right away</span>
           </div>
         </>
       )}
@@ -203,7 +203,7 @@ export function ReviewCard({
         </div>
       ) : (
         <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-gray-900/50 border border-slate-200 dark:border-white/5 text-xs text-slate-600 dark:text-gray-400 flex items-center justify-between">
-          <span className="text-[11px]">Analysis pending — click Analyze to run Gemini triage</span>
+          <span className="text-[11px]">Click below to understand this review</span>
           <button
             onClick={() => onAnalyze(review.id)}
             disabled={isAnalyzing}
@@ -220,7 +220,7 @@ export function ReviewCard({
         <div className="p-3 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/20 border border-indigo-200 dark:border-indigo-500/10 space-y-1.5 relative">
           <div className="flex items-center justify-between text-[10px]">
             <span className="flex items-center gap-1 text-indigo-700 dark:text-indigo-400 font-semibold uppercase tracking-wider">
-              <Sparkles className="w-3 h-3" /> Gemini AI Draft Response
+              <Sparkles className="w-3 h-3" /> AI Draft Reply
             </span>
             <span
               className={`font-semibold capitalize px-1.5 py-0.2 rounded text-[10px] ${
@@ -245,7 +245,7 @@ export function ReviewCard({
         <div className="p-3 rounded-xl bg-gradient-to-r from-indigo-50 via-purple-50 to-indigo-50 dark:from-indigo-950/40 dark:via-purple-950/20 dark:to-indigo-950/40 border border-indigo-200 dark:border-indigo-500/30 space-y-2 animate-in fade-in duration-150">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wider flex items-center gap-1">
-              <Bot className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" /> Generative AI Reply Assistant
+              <Bot className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" /> Draft with your notes
             </span>
             <button
               type="button"
@@ -267,7 +267,7 @@ export function ReviewCard({
                   onGenerateResponse(review.id, undefined, cardQuickNotes)
                 }
               }}
-              placeholder="Type rough words (e.g., 'sorry delay, 20% discount on next order')..."
+              placeholder="E.g., 'sorry for the delay, 20% discount on next order'..."
               className="w-full px-3 py-1.5 bg-white dark:bg-[#06080e] border border-indigo-200 dark:border-indigo-500/30 focus:border-indigo-500 rounded-lg text-xs text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-gray-500 focus:outline-none"
             />
             <button
@@ -281,7 +281,7 @@ export function ReviewCard({
               ) : (
                 <Sparkles className="w-3 h-3" />
               )}
-              <span>Generate</span>
+              <span>Draft</span>
             </button>
           </div>
         </div>
@@ -319,7 +319,7 @@ export function ReviewCard({
             title="Compose reply using quick keywords or instructions"
           >
             <Bot className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-            <span>AI Assist</span>
+            <span>Add Notes</span>
           </button>
 
           {/* Generate Response or Regenerate */}
@@ -334,7 +334,7 @@ export function ReviewCard({
               ) : (
                 <MessageSquare className="w-3.5 h-3.5" />
               )}
-              <span>Generate Response</span>
+              <span>Draft Reply with AI</span>
             </button>
           ) : (
             <button
@@ -348,7 +348,7 @@ export function ReviewCard({
               ) : (
                 <RotateCw className="w-3.5 h-3.5" />
               )}
-              <span>Regenerate</span>
+              <span>Try Another Draft</span>
             </button>
           )}
 
@@ -360,7 +360,7 @@ export function ReviewCard({
               title="Edit response in studio"
             >
               <Edit3 className="w-3.5 h-3.5" />
-              <span>Edit Response</span>
+              <span>Edit Reply</span>
             </button>
           )}
 
@@ -377,7 +377,7 @@ export function ReviewCard({
               ) : (
                 <Check className="w-3.5 h-3.5" />
               )}
-              <span>Approve</span>
+              <span>Approve & Send</span>
             </button>
           )}
         </div>

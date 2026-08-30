@@ -245,7 +245,7 @@ export function ReviewModal({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-base font-bold text-slate-900 dark:text-white tracking-tight">Review Details & Intelligence</h3>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white tracking-tight">Review Details</h3>
                 <span className={`text-[10px] font-semibold uppercase px-2 py-0.5 rounded-md border ${platformBadge}`}>
                   {review.platform}
                 </span>
@@ -255,7 +255,7 @@ export function ReviewModal({
                   </span>
                 )}
               </div>
-              <p className="text-xs text-slate-500 dark:text-gray-400">Deep root-cause diagnostics, priority reasoning, and editable AI reply</p>
+              <p className="text-xs text-slate-500 dark:text-gray-400">Review details and AI draft reply</p>
             </div>
           </div>
 
@@ -333,7 +333,7 @@ export function ReviewModal({
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-gray-400 flex items-center gap-1.5">
-                <Activity className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" /> AI Deep Analysis
+                <Activity className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" /> AI Analysis
               </span>
               <button
                 onClick={handleReanalyze}
@@ -341,7 +341,7 @@ export function ReviewModal({
                 className="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium flex items-center gap-1 disabled:opacity-50"
               >
                 {isAnalyzing ? <Loader2 className="w-3 h-3 animate-spin" /> : <Wand2 className="w-3 h-3" />}
-                Re-Analyze with Gemini
+                Refresh Analysis
               </button>
             </div>
 
@@ -457,7 +457,7 @@ export function ReviewModal({
               </div>
             ) : (
               <div className="p-5 text-center rounded-2xl bg-slate-50 dark:bg-gray-950/60 border border-slate-200 dark:border-gray-800">
-                <p className="text-xs text-slate-500 dark:text-gray-400">Analysis pending. Click &apos;Re-Analyze with Gemini&apos; to process.</p>
+                <p className="text-xs text-slate-500 dark:text-gray-400">Analysis pending. Click &apos;Refresh Analysis&apos; to process.</p>
               </div>
             )}
           </div>
@@ -505,10 +505,10 @@ export function ReviewModal({
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
                 <label className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-gray-200 flex items-center gap-1.5">
-                  <Sparkles className="w-4 h-4 text-indigo-600 dark:text-indigo-400" /> AI Response Studio
+                  <Sparkles className="w-4 h-4 text-indigo-600 dark:text-indigo-400" /> Draft Reply
                 </label>
                 <p className="text-[11px] text-slate-500 dark:text-gray-400 mt-0.5">
-                  Generate, customize with quick notes, and approve personalized responses.
+                  Generate, customize, and approve personalized responses.
                 </p>
               </div>
 
@@ -535,10 +535,10 @@ export function ReviewModal({
                   </div>
                   <div>
                     <span className="text-xs font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
-                      Generative AI Assistant <span className="text-[10px] px-1.5 py-0.2 rounded bg-indigo-500/10 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300 font-semibold uppercase">Smart Compose</span>
+                      AI Draft Assistant <span className="text-[10px] px-1.5 py-0.2 rounded bg-indigo-500/10 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300 font-semibold uppercase">Smart Compose</span>
                     </span>
                     <p className="text-[11px] text-slate-500 dark:text-gray-400">
-                      Type rough keywords or pick a key point below — AI will analyze the review &amp; compose a full customer message.
+                      Type some notes or pick a key point below, and AI will write the full reply.
                     </p>
                   </div>
                 </div>
@@ -608,7 +608,7 @@ export function ReviewModal({
                   ) : (
                     <Sparkles className="w-3.5 h-3.5" />
                   )}
-                  <span>{quickNotes.trim() ? 'Generate from Notes' : 'AI Generate'}</span>
+                  <span>{quickNotes.trim() ? 'Draft from Notes' : 'Draft Reply'}</span>
                 </button>
               </div>
             </div>
@@ -661,7 +661,7 @@ export function ReviewModal({
                   ) : (
                     <Wand2 className="w-3.5 h-3.5" />
                   )}
-                  <span>{editedResponse ? 'Regenerate Draft' : 'Generate Full Draft'}</span>
+                  <span>{editedResponse ? 'Try Another Draft' : 'Draft Reply'}</span>
                 </button>
               </div>
             </div>
@@ -734,7 +734,7 @@ export function ReviewModal({
               ) : (
                 <RotateCw className="w-3.5 h-3.5" />
               )}
-              <span>Regenerate</span>
+              <span>Try Another Draft</span>
             </button>
 
             <button
@@ -743,7 +743,7 @@ export function ReviewModal({
               className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-xs font-bold text-white transition-colors shadow-lg shadow-emerald-600/25 disabled:opacity-50"
             >
               <Check className="w-3.5 h-3.5" />
-              <span>Approve Response</span>
+              <span>Approve & Send</span>
             </button>
           </div>
         </div>
