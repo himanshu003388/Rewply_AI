@@ -9,6 +9,8 @@ import {
   GenerateBusinessInsightsParams,
   AskReviewsAssistantParams,
   AssistantAnswer,
+  GenerateLinkedInPostParams,
+  GenerateLinkedInPostResult,
 } from './types'
 import {
   SentimentType,
@@ -646,6 +648,106 @@ Return ONLY a valid JSON object matching this exact schema:
     return safeParseGeminiJSON<AssistantAnswer>(text, defaultFallback)
   } catch (error) {
     console.warn('Gemini askReviewsAssistant failed, using fallback:', (error as Error).message)
+    return defaultFallback
+  }
+}
+
+/**
+ * 6. Generate viral, high-engagement LinkedIn post celebrating customer success, team turnaround, or AI CX leadership
+ */
+export async function generateLinkedInPost(params: GenerateLinkedInPostParams): Promise<GenerateLinkedInPostResult> {
+  const businessName = params.businessName || 'BurgerHub Delivery'
+  const industry = params.industry || 'Food Delivery & Restaurant Services'
+  const style = params.style || 'customer_spotlight'
+  const tone = params.tone || 'inspiring'
+
+  const topQuotes = params.reviews.slice(0, 3).map((r) => `"${r.review_text}" - ${r.customer_name} (${r.rating}★)`).join('\n')
+
+  const defaultPost = `🚀 Excited to celebrate our team at ${businessName}!
+
+Customer obsession isn't just a buzzword for us—it's how we run our operations every single day. Here's what some of our amazing customers had to say recently:
+
+${topQuotes || '"Best burgers in town, fast delivery and outstanding customer care!" - Sarah M.'}
+
+${params.customNote ? `\n💡 Key Update: ${params.customNote}\n` : ''}
+By leveraging AI-powered review intelligence and rapid triage, we've reduced our response SLA by 85% and made sure every single customer feels heard and valued.
+
+Huge shoutout to our kitchen and logistics crew for raising the bar every week! 🙌
+
+#CustomerObsession #SmallBusiness #CustomerExperience #AIForBusiness #Leadership #Growth`
+
+  const defaultFallback: GenerateLinkedInPostResult = {
+    headline: `🚀 How ${businessName} Delivers 5-Star Customer Experiences at Scale`,
+    post: defaultPost,
+    hashtags: ['#CustomerObsession', '#SmallBusiness', '#CustomerExperience', '#AIForBusiness', '#Leadership'],
+    keyTakeaway: 'Prioritizing rapid response times and customer feedback drives loyalty and sustainable retention.',
+    characterCount: defaultPost.length,
+  }
+
+  if (!isGeminiAvailable()) {
+    console.info('GEMINI_API_KEY is not configured. Using deterministic LinkedIn post fallback.')
+    return defaultFallback
+  }
+
+  try {
+    const model = getGeminiModel()
+
+    const prompt = `You are a top-tier viral B2B / B2C LinkedIn copywriter and social media strategist for "${businessName}" in the ${industry} industry.
+
+Goal: Write a compelling, highly engaging, authentic LinkedIn post based on real customer feedback intelligence.
+
+Style Selected: ${style}
+(Styles:
+- customer_spotlight: Celebrates 5-star customer reviews, customer loyalty, and team gratitude.
+- turnaround_story: Shares how negative/constructive feedback was heard, operational root causes were rapidly fixed, and customer satisfaction was restored.
+- team_milestone: Celebrates a customer milestone (e.g. 500+ 5-star reviews, 99% satisfaction rate) and appreciates frontline staff.
+- thought_leadership: Discusses how modern small businesses use AI agents to eliminate unanswered reviews and drive customer retention.)
+
+Tone: ${tone} (inspiring, professional, celebratory, authentic)
+${params.customNote ? `Additional Founder / Manager Note: "${params.customNote}"` : ''}
+
+Customer Quotes:
+${topQuotes}
+
+Format Rules:
+1. Hook the reader in the first 2 lines with a strong, clean opening hook (use line breaks between short punchy sentences).
+2. Weave the real customer quotes or operational lessons naturally into the story.
+3. Add a clear takeaway for business leaders, founders, and CX teams.
+4. Conclude with an open-ended engagement question to drive comments and discussion.
+5. Include 4-6 relevant, high-traffic hashtags at the end.
+6. Return valid JSON ONLY.
+
+JSON Schema:
+{
+  "headline": "<1 concise headline summary of the post>",
+  "post": "<The complete LinkedIn post formatted with clean paragraphs, emojis, quotes, and hashtags ready to post>",
+  "hashtags": ["#Tag1", "#Tag2", "#Tag3", "#Tag4"],
+  "keyTakeaway": "<1 sentence key lesson or takeaway from the post>"
+}`
+
+    const generatePromise = model.generateContent({
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      generationConfig: {
+        temperature: 0.35,
+        responseMimeType: 'application/json',
+      },
+    })
+
+    const response = await executeWithTimeout(generatePromise, 25000, 'LinkedIn Post Generator')
+    const text = response.response.text()
+
+    const parsed = safeParseGeminiJSON<GenerateLinkedInPostResult>(text, defaultFallback)
+    const finalPost = parsed.post ? parsed.post.trim() : defaultFallback.post
+
+    return {
+      headline: parsed.headline || defaultFallback.headline,
+      post: finalPost,
+      hashtags: Array.isArray(parsed.hashtags) && parsed.hashtags.length > 0 ? parsed.hashtags : defaultFallback.hashtags,
+      keyTakeaway: parsed.keyTakeaway || defaultFallback.keyTakeaway,
+      characterCount: finalPost.length,
+    }
+  } catch (error) {
+    console.warn('Gemini LinkedIn post generation failed, using fallback:', (error as Error).message)
     return defaultFallback
   }
 }

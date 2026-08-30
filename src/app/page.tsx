@@ -44,6 +44,7 @@ export default function DashboardPage() {
   const [activeFilter, setActiveFilter] = useState<QuickFilter>('all')
   const [selectedPlatform, setSelectedPlatform] = useState('all')
   const [sortBy, setSortBy] = useState<SortOption>('highest_priority')
+  const [selectedLocation, setSelectedLocation] = useState('all')
 
 
 
@@ -449,6 +450,8 @@ export default function DashboardPage() {
           onToggleDemoMode={() => setIsDemoModeActive(!isDemoModeActive)}
           onOpenMobileSidebar={() => setIsMobileSidebarOpen(true)}
           currentViewTitle={viewTitles[viewMode]}
+          selectedLocation={selectedLocation}
+          onLocationChange={setSelectedLocation}
         >
           <SimulateReviewButton
             onReviewSimulated={handleReviewSimulated}
@@ -530,7 +533,18 @@ export default function DashboardPage() {
             </section>
           ) : viewMode === 'social' ? (
             <section className="space-y-6">
-              <LinkedInBoast reviews={allReviews} />
+              <LinkedInBoast
+                reviews={allReviews}
+                businessName={
+                  selectedLocation === 'downtown'
+                    ? 'BurgerHub (Downtown Flagship)'
+                    : selectedLocation === 'westside'
+                    ? 'BurgerHub (Westside Cloud Kitchen)'
+                    : selectedLocation === 'airport'
+                    ? 'BurgerHub (Airport Express)'
+                    : 'BurgerHub Delivery'
+                }
+              />
             </section>
           ) : (
             <section className="space-y-6">

@@ -185,3 +185,26 @@ export interface AskReviewsAssistantParams {
     priority?: string
   }>
 }
+
+export interface GenerateLinkedInPostParams {
+  businessName?: string
+  industry?: string
+  style: 'customer_spotlight' | 'turnaround_story' | 'team_milestone' | 'thought_leadership'
+  reviews: Array<{
+    customer_name: string
+    review_text: string
+    rating: number
+    platform?: string
+  }>
+  resolvedIssue?: string
+  tone?: 'inspiring' | 'professional' | 'celebratory' | 'authentic'
+  customNote?: string
+}
+
+export interface GenerateLinkedInPostResult {
+  headline: string
+  post: string
+  hashtags: string[]
+  keyTakeaway: string
+  characterCount: number
+}

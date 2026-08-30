@@ -122,9 +122,14 @@ export function ReviewCard({
       {isCritical && (
         <>
           <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-rose-500/50 to-transparent"></div>
-          <div className="flex items-center gap-1.5 text-[11px] font-semibold text-rose-700 dark:text-rose-400 bg-rose-500/10 px-3 py-1.5 -mx-5 -mt-5 mb-1 border-b border-rose-200 dark:border-rose-500/10">
-            <ShieldAlert className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
-            <span>Urgent: Please look at this right away</span>
+          <div className="flex items-center justify-between text-[11px] font-semibold text-rose-700 dark:text-rose-400 bg-rose-500/10 px-3 py-1.5 -mx-5 -mt-5 mb-1 border-b border-rose-200 dark:border-rose-500/10">
+            <div className="flex items-center gap-1.5">
+              <ShieldAlert className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400 animate-pulse" />
+              <span>Urgent Review Escalation</span>
+            </div>
+            <span className="text-[10px] font-mono font-bold px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-800 dark:text-rose-300">
+              ⏱️ SLA: 18m left (1h target)
+            </span>
           </div>
         </>
       )}
