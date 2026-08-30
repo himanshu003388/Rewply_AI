@@ -19,6 +19,8 @@ import {
   User,
   Calendar,
   AlertTriangle,
+  Bot,
+  Zap,
 } from 'lucide-react'
 import { Review } from '@/types/database.types'
 import { SupportedTone } from '@/lib/ai/types'
@@ -42,7 +44,8 @@ interface ReviewModalProps {
   ) => Promise<void>
   onGenerateAIResponse: (
     reviewId: string,
-    tone: SupportedTone
+    tone: SupportedTone,
+    userNotes?: string
   ) => Promise<string>
   onAnalyzeReview: (reviewId: string) => Promise<void>
 }
@@ -108,14 +111,17 @@ export function ReviewModal({
   onAnalyzeReview,
 }: ReviewModalProps) {
   const [editedResponse, setEditedResponse] = useState('')
+  const [quickNotes, setQuickNotes] = useState('')
   const [selectedTone, setSelectedTone] = useState<SupportedTone>('professional')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
+  const [isExpandingText, setIsExpandingText] = useState(false)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
 
   useEffect(() => {
     if (review) {
       setEditedResponse(review.ai_response || '')
+      setQuickNotes('')
       const initialTone: SupportedTone =
         review.rating <= 2
           ? 'empathetic'
@@ -136,6 +142,30 @@ export function ReviewModal({
     return derivePriorityExplanation(review)
   }, [review])
 
+  const quickPrompts = useMemo(() => {
+    if (!review) return []
+    if (review.rating <= 2) {
+      return [
+        { label: 'Apologize & 20% discount', text: 'Apologize for the inconvenience and offer 20% off their next order' },
+        { label: 'Peak rush explanation', text: 'Explain kitchen peak rush delays and prioritize packaging improvements' },
+        { label: 'Direct manager escalation', text: 'Offer direct contact with our general manager to review their order details' },
+        { label: 'Free remake voucher', text: 'Issue a complimentary replacement meal voucher on us' },
+      ]
+    } else if (review.rating === 3) {
+      return [
+        { label: 'Thank & address delay', text: 'Thank them for constructive feedback and commit to improving speed' },
+        { label: 'Invite back for new recipe', text: 'Invite them back to try our newly refined recipe' },
+        { label: '10% loyalty perk', text: 'Offer 10% loyalty bonus on their next visit' },
+      ]
+    } else {
+      return [
+        { label: 'Warm thanks & invite back', text: 'Thank them warmly and invite them back to try our chef specials' },
+        { label: 'Loyalty bonus points', text: 'Offer VIP loyalty bonus points for being an amazing customer' },
+        { label: 'Compliment the kitchen team', text: 'Let them know their praise was shared with our head chef and kitchen staff' },
+      ]
+    }
+  }, [review])
+
   if (!isOpen || !review) return null
 
   const isCritical =
@@ -153,13 +183,25 @@ export function ReviewModal({
     }
   }
 
-  const handleGenerate = async () => {
+  const handleGenerate = async (customNotes?: string) => {
     setIsGenerating(true)
     try {
-      const generated = await onGenerateAIResponse(review.id, selectedTone)
+      const notesToSend = customNotes !== undefined ? customNotes : quickNotes
+      const generated = await onGenerateAIResponse(review.id, selectedTone, notesToSend)
       setEditedResponse(generated)
     } finally {
       setIsGenerating(false)
+    }
+  }
+
+  const handleExpandCurrentText = async () => {
+    if (!editedResponse.trim()) return
+    setIsExpandingText(true)
+    try {
+      const generated = await onGenerateAIResponse(review.id, selectedTone, editedResponse.trim())
+      setEditedResponse(generated)
+    } finally {
+      setIsExpandingText(false)
     }
   }
 
@@ -459,14 +501,14 @@ export function ReviewModal({
           )}
 
           {/* SECTION 5: AI RESPONSE STUDIO */}
-          <div className="space-y-3 border-t border-white/5 pt-5">
+          <div className="space-y-4 border-t border-white/5 pt-5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
                 <label className="text-xs font-bold uppercase tracking-wider text-gray-200 flex items-center gap-1.5">
                   <Sparkles className="w-4 h-4 text-indigo-400" /> AI Response Studio
                 </label>
                 <p className="text-[11px] text-gray-400 mt-0.5">
-                  Generate, refine, and approve personalized responses. Responses are never published externally.
+                  Generate, customize with quick notes, and approve personalized responses.
                 </p>
               </div>
 
@@ -482,6 +524,93 @@ export function ReviewModal({
               >
                 Status: {review.response_status}
               </span>
+            </div>
+
+            {/* Generative AI Smart Assistant Bar */}
+            <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-950/40 via-[#0b0f19] to-purple-950/30 border border-indigo-500/25 shadow-lg shadow-indigo-950/20 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 rounded-lg bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                    <Bot className="w-4 h-4 text-indigo-400" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                      Generative AI Assistant <span className="text-[10px] px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 font-semibold uppercase">Smart Compose</span>
+                    </span>
+                    <p className="text-[11px] text-gray-400">
+                      Type rough keywords or pick a key point below — AI will analyze the review &amp; compose a full customer message.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick suggestion chips */}
+              {quickPrompts.length > 0 && (
+                <div className="space-y-1.5">
+                  <span className="text-[10px] text-gray-400 uppercase font-semibold tracking-wider flex items-center gap-1">
+                    <Zap className="w-3 h-3 text-amber-400" /> Quick Key Points:
+                  </span>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    {quickPrompts.map((chip, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setQuickNotes(chip.text)}
+                        className={`text-[11px] px-2.5 py-1 rounded-lg border transition-all ${
+                          quickNotes === chip.text
+                            ? 'bg-indigo-600/30 border-indigo-500 text-indigo-200'
+                            : 'bg-[#06080e]/80 border-white/5 text-gray-300 hover:border-indigo-500/40 hover:text-white'
+                        }`}
+                        title={chip.text}
+                      >
+                        + {chip.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Input for custom words / notes */}
+              <div className="flex items-center gap-2">
+                <div className="relative flex-1">
+                  <input
+                    type="text"
+                    value={quickNotes}
+                    onChange={(e) => setQuickNotes(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault()
+                        handleGenerate()
+                      }
+                    }}
+                    placeholder="Type rough words (e.g., 'sorry about cold burger, offered 20% refund, contact manager')..."
+                    className="w-full pl-3.5 pr-10 py-2.5 bg-[#06080e] border border-indigo-500/30 focus:border-indigo-400 rounded-xl text-xs text-white placeholder-gray-500 focus:outline-none transition-colors"
+                  />
+                  {quickNotes && (
+                    <button
+                      type="button"
+                      onClick={() => setQuickNotes('')}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 text-xs"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => handleGenerate()}
+                  disabled={isGenerating}
+                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-xs font-bold text-white shadow-md shadow-indigo-600/30 transition-all disabled:opacity-50 shrink-0"
+                >
+                  {isGenerating ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Sparkles className="w-3.5 h-3.5" />
+                  )}
+                  <span>{quickNotes.trim() ? 'Generate from Notes' : 'AI Generate'}</span>
+                </button>
+              </div>
             </div>
 
             {/* Tone Selector Toolbar */}
@@ -516,14 +645,14 @@ export function ReviewModal({
               <div className="flex items-center justify-between pt-1">
                 <div className="flex items-center gap-1 text-[11px] text-gray-400">
                   <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>50-100 words concise • Non-liability & customer support escalation active</span>
+                  <span>50-100 words concise • Non-liability &amp; customer support escalation active</span>
                 </div>
 
                 <button
                   type="button"
-                  onClick={handleGenerate}
+                  onClick={() => handleGenerate()}
                   disabled={isGenerating}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold text-white shadow-sm transition-colors disabled:opacity-50"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gray-900/80 border border-white/10 hover:bg-gray-800 text-xs font-semibold text-indigo-300 transition-colors disabled:opacity-50"
                 >
                   {isGenerating ? (
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -532,7 +661,7 @@ export function ReviewModal({
                   ) : (
                     <Wand2 className="w-3.5 h-3.5" />
                   )}
-                  <span>{editedResponse ? 'Regenerate' : 'Generate Response'}</span>
+                  <span>{editedResponse ? 'Regenerate Draft' : 'Generate Full Draft'}</span>
                 </button>
               </div>
             </div>
@@ -541,15 +670,33 @@ export function ReviewModal({
             <div className="space-y-1.5">
               <div className="flex items-center justify-between text-[11px] text-gray-400">
                 <span className="font-medium">Response Text (Editable):</span>
-                <span className={wordCount >= 50 && wordCount <= 100 ? 'text-emerald-400 font-semibold' : 'text-gray-400'}>
-                  {wordCount} words {wordCount >= 50 && wordCount <= 100 ? '(Optimal: 50-100)' : ''}
-                </span>
+                <div className="flex items-center gap-2">
+                  {editedResponse.trim().length > 0 && (
+                    <button
+                      type="button"
+                      onClick={handleExpandCurrentText}
+                      disabled={isExpandingText || isGenerating}
+                      className="flex items-center gap-1 text-[11px] font-semibold text-indigo-400 hover:text-indigo-300 disabled:opacity-50 transition-colors"
+                      title="Turn whatever words are typed below into a full polished reply"
+                    >
+                      {isExpandingText ? (
+                        <Loader2 className="w-3 h-3 animate-spin" />
+                      ) : (
+                        <Wand2 className="w-3 h-3 text-indigo-400" />
+                      )}
+                      <span>Polish &amp; Expand My Words</span>
+                    </button>
+                  )}
+                  <span className={wordCount >= 50 && wordCount <= 100 ? 'text-emerald-400 font-semibold' : 'text-gray-400'}>
+                    {wordCount} words {wordCount >= 50 && wordCount <= 100 ? '(Optimal: 50-100)' : ''}
+                  </span>
+                </div>
               </div>
               <textarea
                 rows={5}
                 value={editedResponse}
                 onChange={(e) => setEditedResponse(e.target.value)}
-                placeholder="AI generated response text will appear here. You can refine or edit it before approving..."
+                placeholder="AI generated response text will appear here. You can type rough words and click 'Polish &amp; Expand My Words', or edit the response before approving..."
                 className="w-full p-3.5 bg-[#0b0f19] border border-white/5 rounded-2xl text-xs text-gray-200 leading-relaxed placeholder-gray-600 focus:outline-none focus:border-indigo-500 transition-colors"
               />
             </div>
@@ -579,7 +726,7 @@ export function ReviewModal({
 
             <button
               disabled={isGenerating}
-              onClick={handleGenerate}
+              onClick={() => handleGenerate()}
               className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-xs font-semibold text-indigo-300 transition-colors disabled:opacity-50"
             >
               {isGenerating ? (

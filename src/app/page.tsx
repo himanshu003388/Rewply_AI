@@ -244,15 +244,17 @@ export default function DashboardPage() {
     mutationFn: async ({
       reviewId,
       tone,
+      userNotes,
     }: {
       reviewId: string
       tone?: SupportedTone | string
+      userNotes?: string
     }) => {
       setGeneratingIds((prev) => ({ ...prev, [reviewId]: true }))
       const res = await fetch('/api/reviews/respond', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reviewId, tone }),
+        body: JSON.stringify({ reviewId, tone, userNotes }),
       })
       const json = await res.json()
       if (!res.ok || !json.success) {
@@ -301,7 +303,7 @@ export default function DashboardPage() {
     }
   }
 
-  const handleGenerateResponseDirect = async (reviewId: string, tone?: string) => {
+  const handleGenerateResponseDirect = async (reviewId: string, tone?: string, userNotes?: string) => {
     try {
       const review = allReviews.find((r) => r.id === reviewId)
       const selectedTone: SupportedTone =
@@ -309,6 +311,7 @@ export default function DashboardPage() {
       await generateResponseMutation.mutateAsync({
         reviewId,
         tone: selectedTone,
+        userNotes,
       })
     } catch (err) {
       alert((err as Error).message)
@@ -317,11 +320,13 @@ export default function DashboardPage() {
 
   const handleGenerateAIResponseInModal = async (
     reviewId: string,
-    tone: SupportedTone
+    tone: SupportedTone,
+    userNotes?: string
   ): Promise<string> => {
     const res = await generateResponseMutation.mutateAsync({
       reviewId,
       tone,
+      userNotes,
     })
     return res.aiResponse
   }

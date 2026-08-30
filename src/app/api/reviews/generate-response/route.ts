@@ -5,6 +5,8 @@ import { getReviewById, updateReviewStatus, updateReviewAnalysis } from '@/lib/a
 interface GenerateRequestBody {
   reviewId?: string
   tone?: string
+  userNotes?: string
+  notes?: string
 }
 
 export async function POST(req: NextRequest) {
@@ -19,7 +21,8 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const { reviewId, tone } = body || {}
+    const { reviewId, tone, userNotes, notes } = body || {}
+    const rawNotes = typeof userNotes === 'string' ? userNotes : typeof notes === 'string' ? notes : undefined
 
     if (!reviewId || typeof reviewId !== 'string' || reviewId.trim() === '') {
       return NextResponse.json(
@@ -61,6 +64,7 @@ export async function POST(req: NextRequest) {
       platform: review.platform,
       analysis,
       tone: tone || 'professional',
+      userNotes: rawNotes,
     })
 
     // 4. Save response to Supabase

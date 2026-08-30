@@ -8,6 +8,8 @@ const ALLOWED_TONES: SupportedTone[] = ['professional', 'friendly', 'empathetic'
 interface RespondRequestBody {
   reviewId?: string
   tone?: SupportedTone | string
+  userNotes?: string
+  notes?: string
 }
 
 export async function POST(req: NextRequest) {
@@ -22,7 +24,8 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const { reviewId, tone } = body || {}
+    const { reviewId, tone, userNotes, notes } = body || {}
+    const rawNotes = typeof userNotes === 'string' ? userNotes : typeof notes === 'string' ? notes : undefined
 
     // 1. Validation: reviewId
     if (!reviewId || typeof reviewId !== 'string' || reviewId.trim() === '') {
@@ -79,6 +82,7 @@ export async function POST(req: NextRequest) {
         urgency: analysis?.urgency_score ?? analysis?.urgency,
         suggestedAction: analysis?.suggested_action,
         tone: validatedTone,
+        userNotes: rawNotes,
       })
     } catch (aiErr) {
       console.error('Gemini Response Generation Error:', aiErr)

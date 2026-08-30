@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import {
   Sparkles,
   CheckCircle2,
@@ -14,6 +14,8 @@ import {
   ShieldAlert,
   Edit3,
   Check,
+  Bot,
+  X,
 } from 'lucide-react'
 import { Review } from '@/types/database.types'
 
@@ -21,7 +23,7 @@ interface ReviewCardProps {
   review: Review
   onOpenDetails: (review: Review) => void
   onAnalyze: (reviewId: string) => Promise<void>
-  onGenerateResponse: (reviewId: string, tone?: string) => Promise<void>
+  onGenerateResponse: (reviewId: string, tone?: string, userNotes?: string) => Promise<void>
   onApproveResponse: (reviewId: string) => Promise<void>
   isAnalyzing?: boolean
   isGenerating?: boolean
@@ -38,6 +40,8 @@ export function ReviewCard({
   isGenerating = false,
   isApproving = false,
 }: ReviewCardProps) {
+  const [showQuickAssist, setShowQuickAssist] = useState(false)
+  const [cardQuickNotes, setCardQuickNotes] = useState('')
   const isCritical =
     review.analysis?.priority === 'critical' || review.analysis?.priority === 'P1'
   const isHigh =
@@ -236,6 +240,53 @@ export function ReviewCard({
         </div>
       )}
 
+      {/* Quick AI Generative Assistant Drawer */}
+      {showQuickAssist && (
+        <div className="p-3 rounded-xl bg-gradient-to-r from-indigo-950/40 via-purple-950/20 to-indigo-950/40 border border-indigo-500/30 space-y-2 animate-in fade-in duration-150">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-bold text-indigo-300 uppercase tracking-wider flex items-center gap-1">
+              <Bot className="w-3.5 h-3.5 text-indigo-400" /> Generative AI Reply Assistant
+            </span>
+            <button
+              type="button"
+              onClick={() => setShowQuickAssist(false)}
+              className="text-gray-500 hover:text-gray-300"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <input
+              type="text"
+              value={cardQuickNotes}
+              onChange={(e) => setCardQuickNotes(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  onGenerateResponse(review.id, undefined, cardQuickNotes)
+                }
+              }}
+              placeholder="Type rough words (e.g., 'sorry delay, 20% discount on next order')..."
+              className="w-full px-3 py-1.5 bg-[#06080e] border border-indigo-500/30 focus:border-indigo-400 rounded-lg text-xs text-white placeholder-gray-500 focus:outline-none"
+            />
+            <button
+              type="button"
+              disabled={isGenerating}
+              onClick={() => onGenerateResponse(review.id, undefined, cardQuickNotes)}
+              className="px-3 py-1.5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white rounded-lg text-xs font-semibold shadow-sm transition-all shrink-0 flex items-center gap-1 disabled:opacity-50"
+            >
+              {isGenerating ? (
+                <Loader2 className="w-3 h-3 animate-spin" />
+              ) : (
+                <Sparkles className="w-3 h-3" />
+              )}
+              <span>Generate</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Action Footer Button Bar */}
       <div className="border-t border-gray-800/80 pt-3 flex items-center justify-between gap-2 flex-wrap">
         <div className="flex items-center gap-1.5 flex-wrap">
@@ -254,6 +305,21 @@ export function ReviewCard({
               <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
             )}
             <span>{hasAnalysis ? 'Re-Analyze' : 'Analyze'}</span>
+          </button>
+
+          {/* Quick AI Assist Toggle Button */}
+          <button
+            type="button"
+            onClick={() => setShowQuickAssist(!showQuickAssist)}
+            className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-all ${
+              showQuickAssist
+                ? 'bg-indigo-600/30 border-indigo-500 text-indigo-200'
+                : 'bg-gray-900/50 border-indigo-500/20 text-indigo-300 hover:bg-gray-800 hover:border-indigo-500/40'
+            }`}
+            title="Compose reply using quick keywords or instructions"
+          >
+            <Bot className="w-3.5 h-3.5 text-indigo-400" />
+            <span>AI Assist</span>
           </button>
 
           {/* Generate Response or Regenerate */}

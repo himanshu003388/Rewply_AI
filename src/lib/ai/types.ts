@@ -51,6 +51,7 @@ export interface GenerateResponseParams {
   urgency?: string | number
   suggestedAction?: string
   tone?: SupportedTone | string
+  userNotes?: string
 }
 
 export interface GenerateResponseResult {

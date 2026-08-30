@@ -9,7 +9,7 @@ interface ReviewListProps {
   reviews: Review[]
   onOpenDetails: (review: Review) => void
   onAnalyze: (reviewId: string) => Promise<void>
-  onGenerateResponse: (reviewId: string, tone?: string) => Promise<void>
+  onGenerateResponse: (reviewId: string, tone?: string, userNotes?: string) => Promise<void>
   onApproveResponse: (reviewId: string) => Promise<void>
   analyzingIds?: Record<string, boolean>
   generatingIds?: Record<string, boolean>

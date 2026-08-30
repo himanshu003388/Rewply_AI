@@ -261,10 +261,15 @@ export async function generateReviewResponse(params: GenerateResponseParams): Pr
   const primaryIssue = params.primaryIssue || params.analysis?.primary_issue || params.analysis?.issue || 'general feedback'
   const urgency = params.urgency !== undefined ? params.analysis?.urgency_score ?? params.urgency : (params.rating <= 1 ? 'high' : 'low')
   const suggestedAction = params.suggestedAction || params.analysis?.suggested_action || 'respond'
+  const userNotes = params.userNotes ? params.userNotes.trim() : ''
 
   const defaultFallback: GenerateResponseResult = {
     response:
-      params.rating <= 2
+      userNotes.length > 0
+        ? params.rating <= 2
+          ? `Hi ${params.customerName}, thank you for bringing this to our attention. We are genuinely sorry that your experience with ${businessName} did not meet expectations. To resolve this, ${userNotes}. Please reach out to our dedicated support team with your order details so we can assist you directly.`
+          : `Hi ${params.customerName}, thank you so much for the wonderful review and for choosing ${businessName}! ${userNotes}. We truly appreciate your support and look forward to serving you again soon!`
+        : params.rating <= 2
         ? `Hi ${params.customerName}, thank you for bringing this to our attention. We are genuinely sorry to hear that your experience with ${businessName} fell short of expectations regarding ${primaryIssue}. We take your feedback seriously and would appreciate the opportunity to look into this further. Please reach out to our dedicated support team with your order details so we can assist you directly.`
         : `Hi ${params.customerName}, thank you so much for the wonderful review and for choosing ${businessName}! We are thrilled you had such a great experience with our team. We look forward to serving your next order soon!`,
     toneUsed: String(tone),
@@ -287,11 +292,12 @@ CRITICAL RULES:
 2. CUSTOMER NAME: Address the customer by name (e.g., "Hi ${params.customerName},") when appropriate.
 3. TONE MATCHING: Strictly write in the selected tone: "${tone}" (Allowed: professional, friendly, empathetic, apologetic, grateful).
 4. LENGTH CONSTRAINT: Keep the response concise, ideally between 50 and 100 words.
-5. NO INVENTED FACTS OR COMPENSATION: NEVER invent specific refund amounts, gift vouchers, discounts, or state that an investigation has already finished unless explicitly provided.
+5. NO INVENTED FACTS OR COMPENSATION: Do not fabricate specific unmentioned compensation unless explicitly instructed in the User Notes below.
 6. NO LEGAL LIABILITY: Never admit legal liability, negligence, or fault in legal terms.
 7. NO GUARANTEES: Never make guarantees or operational promises that cannot be verified.
-8. CONTACT ESCALATION: For serious complaints, delays, or quality issues, politely invite the customer to connect directly with the customer support team (e.g., support email/phone) so their order can be reviewed individually, rather than pretending the issue has been magically resolved.
-9. Return valid JSON ONLY matching the required schema.`
+8. CONTACT ESCALATION: For complaints or service issues, invite the customer to connect with support for direct resolution when appropriate.
+9. USER NOTES EXPANSION: If the user provided rough words, bullet points, or draft notes below, analyze and expand them into a fluent, cohesive, and professional response that seamlessly incorporates their intent into the message.
+10. Return valid JSON ONLY matching the required schema.`
 
     const prompt = `${systemInstructions}
 
@@ -308,6 +314,7 @@ Review Context:
 - Urgency: ${urgency}
 - Recommended Action: ${suggestedAction}
 - Selected Tone: ${tone}
+${userNotes ? `- User's Key Points / Rough Notes to Expand: "${userNotes}"` : ''}
 
 Output Requirement:
 Return ONLY a valid JSON object matching this schema:
