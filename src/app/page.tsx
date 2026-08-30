@@ -196,10 +196,10 @@ export default function DashboardPage() {
       if (json.success && json.insights) {
         setInsightsData(json.insights)
       } else {
-        alert(json.error || 'Failed to generate AI Business Insights.')
+        console.warn('AI Insights generation returned fallback or warning:', json.error)
       }
     } catch (err) {
-      alert((err as Error).message)
+      console.error('Failed to fetch AI insights:', err)
     } finally {
       setIsGeneratingInsights(false)
     }

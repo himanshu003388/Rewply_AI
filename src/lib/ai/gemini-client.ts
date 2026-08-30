@@ -22,6 +22,15 @@ function getApiKey(): string {
 }
 
 /**
+ * Check if Gemini API key is configured and available (server-side only)
+ */
+export function isGeminiAvailable(): boolean {
+  if (typeof window !== 'undefined') return false
+  const apiKey = process.env.GEMINI_API_KEY
+  return Boolean(apiKey && apiKey.trim() !== '' && apiKey !== 'your-gemini-api-key-here')
+}
+
+/**
  * Model aliases & replacements for deprecated/retired Gemini model identifiers
  */
 const MODEL_MAPPINGS: Record<string, string> = {

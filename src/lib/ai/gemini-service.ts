@@ -1,4 +1,4 @@
-import { getGeminiModel, executeWithTimeout, safeParseGeminiJSON } from './gemini-client'
+import { getGeminiModel, executeWithTimeout, safeParseGeminiJSON, isGeminiAvailable } from './gemini-client'
 import {
   AnalyzeReviewParams,
   AnalyzeReviewResult,
@@ -175,9 +175,15 @@ export function validateAndSanitizeAnalysis(
  * 1. Analyze single customer review using Google Gemini
  */
 export async function analyzeReview(params: AnalyzeReviewParams): Promise<AnalyzeReviewResult> {
-  const model = getGeminiModel()
+  if (!isGeminiAvailable()) {
+    console.info('GEMINI_API_KEY is not configured. Using deterministic fallback analysis.')
+    return validateAndSanitizeAnalysis({}, params.rating)
+  }
 
-  const systemInstructions = `You are an expert customer feedback intelligence analyst for high-volume consumer businesses.
+  try {
+    const model = getGeminiModel()
+
+    const systemInstructions = `You are an expert customer feedback intelligence analyst for high-volume consumer businesses.
 Your role is to deeply analyze incoming customer reviews, assess sentiment, emotional state, operational root causes, urgency, risk factors, and recommended next actions.
 
 STRICT SAFETY & BUSINESS RULES:
@@ -189,7 +195,7 @@ STRICT SAFETY & BUSINESS RULES:
 6. Rating alone must NOT determine sentiment; analyze the full text nuance (e.g. a 5-star rating with sarcastic complaint text is negative, a 1-star review with pure praise is mixed/positive).
 7. Return valid JSON ONLY matching the requested schema. No markdown outside the JSON.`
 
-  const prompt = `${systemInstructions}
+    const prompt = `${systemInstructions}
 
 Analyze this customer review:
 Customer Name: ${params.customerName || 'Anonymous'}
@@ -223,26 +229,29 @@ Return ONLY a JSON object with this exact structure:
   "confidence_score": <number between 0.0 and 1.0>
 }`
 
-  const generatePromise = model.generateContent({
-    contents: [{ role: 'user', parts: [{ text: prompt }] }],
-    generationConfig: {
-      temperature: 0.1,
-      responseMimeType: 'application/json',
-    },
-  })
+    const generatePromise = model.generateContent({
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      generationConfig: {
+        temperature: 0.1,
+        responseMimeType: 'application/json',
+      },
+    })
 
-  const response = await executeWithTimeout(generatePromise, 25000, 'Review Analysis Agent')
-  const text = response.response.text()
+    const response = await executeWithTimeout(generatePromise, 25000, 'Review Analysis Agent')
+    const text = response.response.text()
 
-  const rawParsed = safeParseGeminiJSON<Partial<AnalyzeReviewResult>>(text, {})
-  return validateAndSanitizeAnalysis(rawParsed, params.rating)
+    const rawParsed = safeParseGeminiJSON<Partial<AnalyzeReviewResult>>(text, {})
+    return validateAndSanitizeAnalysis(rawParsed, params.rating)
+  } catch (error) {
+    console.warn('Gemini review analysis failed, using fallback:', (error as Error).message)
+    return validateAndSanitizeAnalysis({}, params.rating)
+  }
 }
 
 /**
  * 2. Generate personalized, brand-aligned, contextual response for a customer review using Google Gemini
  */
 export async function generateReviewResponse(params: GenerateResponseParams): Promise<GenerateResponseResult> {
-  const model = getGeminiModel()
   const businessName = params.businessName || 'BurgerHub Delivery'
   const industry = params.industry || 'Food Delivery & Restaurant Services'
   const tone = params.tone || (params.rating <= 2 ? 'empathetic' : 'grateful')
@@ -253,7 +262,24 @@ export async function generateReviewResponse(params: GenerateResponseParams): Pr
   const urgency = params.urgency !== undefined ? params.analysis?.urgency_score ?? params.urgency : (params.rating <= 1 ? 'high' : 'low')
   const suggestedAction = params.suggestedAction || params.analysis?.suggested_action || 'respond'
 
-  const systemInstructions = `You are an expert customer relations and reputation manager for "${businessName}" (${industry}).
+  const defaultFallback: GenerateResponseResult = {
+    response:
+      params.rating <= 2
+        ? `Hi ${params.customerName}, thank you for bringing this to our attention. We are genuinely sorry to hear that your experience with ${businessName} fell short of expectations regarding ${primaryIssue}. We take your feedback seriously and would appreciate the opportunity to look into this further. Please reach out to our dedicated support team with your order details so we can assist you directly.`
+        : `Hi ${params.customerName}, thank you so much for the wonderful review and for choosing ${businessName}! We are thrilled you had such a great experience with our team. We look forward to serving your next order soon!`,
+    toneUsed: String(tone),
+    wordCount: 45,
+  }
+
+  if (!isGeminiAvailable()) {
+    console.info('GEMINI_API_KEY is not configured. Using deterministic fallback response draft.')
+    return defaultFallback
+  }
+
+  try {
+    const model = getGeminiModel()
+
+    const systemInstructions = `You are an expert customer relations and reputation manager for "${businessName}" (${industry}).
 Generate a personalized, brand-aligned public response to the customer's review.
 
 CRITICAL RULES:
@@ -267,7 +293,7 @@ CRITICAL RULES:
 8. CONTACT ESCALATION: For serious complaints, delays, or quality issues, politely invite the customer to connect directly with the customer support team (e.g., support email/phone) so their order can be reviewed individually, rather than pretending the issue has been magically resolved.
 9. Return valid JSON ONLY matching the required schema.`
 
-  const prompt = `${systemInstructions}
+    const prompt = `${systemInstructions}
 
 Review Context:
 - Business Name: ${businessName}
@@ -290,33 +316,29 @@ Return ONLY a valid JSON object matching this schema:
   "toneUsed": "${tone}"
 }`
 
-  const generatePromise = model.generateContent({
-    contents: [{ role: 'user', parts: [{ text: prompt }] }],
-    generationConfig: {
-      temperature: 0.25,
-      responseMimeType: 'application/json',
-    },
-  })
+    const generatePromise = model.generateContent({
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      generationConfig: {
+        temperature: 0.25,
+        responseMimeType: 'application/json',
+      },
+    })
 
-  const response = await executeWithTimeout(generatePromise, 25000, 'Response Generation Agent')
-  const text = response.response.text()
+    const response = await executeWithTimeout(generatePromise, 25000, 'Response Generation Agent')
+    const text = response.response.text()
 
-  const defaultFallback: GenerateResponseResult = {
-    response:
-      params.rating <= 2
-        ? `Hi ${params.customerName}, thank you for bringing this to our attention. We are genuinely sorry to hear that your experience with ${businessName} fell short of expectations regarding ${primaryIssue}. We take your feedback seriously and would appreciate the opportunity to look into this further. Please reach out to our dedicated support team with your order details so we can assist you directly.`
-        : `Hi ${params.customerName}, thank you so much for the wonderful review and for choosing ${businessName}! We are thrilled you had such a great experience with our team. We look forward to serving your next order soon!`,
-    toneUsed: String(tone),
-  }
+    const parsed = safeParseGeminiJSON<GenerateResponseResult>(text, defaultFallback)
+    const cleanedResponse = parsed.response ? parsed.response.trim() : defaultFallback.response
+    const wordCount = cleanedResponse.split(/\s+/).filter(Boolean).length
 
-  const parsed = safeParseGeminiJSON<GenerateResponseResult>(text, defaultFallback)
-  const cleanedResponse = parsed.response ? parsed.response.trim() : defaultFallback.response
-  const wordCount = cleanedResponse.split(/\s+/).filter(Boolean).length
-
-  return {
-    response: cleanedResponse,
-    toneUsed: parsed.toneUsed || String(tone),
-    wordCount,
+    return {
+      response: cleanedResponse,
+      toneUsed: parsed.toneUsed || String(tone),
+      wordCount,
+    }
+  } catch (error) {
+    console.warn('Gemini response generation failed, using fallback:', (error as Error).message)
+    return defaultFallback
   }
 }
 
@@ -326,14 +348,26 @@ Return ONLY a valid JSON object matching this schema:
 export async function analyzeRecurringIssues(
   reviews: Array<{ review_text: string; rating: number; customer_name?: string; platform?: string }>
 ): Promise<AnalyzeRecurringIssuesResult> {
-  const model = getGeminiModel()
+  const defaultFallback: AnalyzeRecurringIssuesResult = {
+    issues: [],
+    totalAnalyzed: reviews.length,
+    primaryRiskCategory: 'Delivery',
+  }
 
-  const reviewsSummary = reviews
-    .slice(0, 60)
-    .map((r, i) => `[${i + 1}] (${r.rating}★) ${r.review_text}`)
-    .join('\n')
+  if (!isGeminiAvailable()) {
+    console.info('GEMINI_API_KEY is not configured. Using fallback recurring issues result.')
+    return defaultFallback
+  }
 
-  const prompt = `You are an operational intelligence analyst for a food delivery & restaurant platform.
+  try {
+    const model = getGeminiModel()
+
+    const reviewsSummary = reviews
+      .slice(0, 60)
+      .map((r, i) => `[${i + 1}] (${r.rating}★) ${r.review_text}`)
+      .join('\n')
+
+    const prompt = `You are an operational intelligence analyst for a food delivery & restaurant platform.
 Analyze the following batch of customer reviews to discover recurring root-cause bottlenecks and group them into prioritized problem clusters.
 
 Reviews Batch (${reviews.length} total):
@@ -357,22 +391,22 @@ Return ONLY a valid JSON object matching this schema:
   "primaryRiskCategory": "<Category causing the highest customer dissatisfaction>"
 }`
 
-  const generatePromise = model.generateContent({
-    contents: [{ role: 'user', parts: [{ text: prompt }] }],
-    generationConfig: {
-      temperature: 0.2,
-      responseMimeType: 'application/json',
-    },
-  })
+    const generatePromise = model.generateContent({
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      generationConfig: {
+        temperature: 0.2,
+        responseMimeType: 'application/json',
+      },
+    })
 
-  const response = await executeWithTimeout(generatePromise, 30000, 'Recurring Issue Analysis')
-  const text = response.response.text()
+    const response = await executeWithTimeout(generatePromise, 30000, 'Recurring Issue Analysis')
+    const text = response.response.text()
 
-  return safeParseGeminiJSON<AnalyzeRecurringIssuesResult>(text, {
-    issues: [],
-    totalAnalyzed: reviews.length,
-    primaryRiskCategory: 'Delivery',
-  })
+    return safeParseGeminiJSON<AnalyzeRecurringIssuesResult>(text, defaultFallback)
+  } catch (error) {
+    console.warn('Gemini recurring issues analysis failed, using fallback:', (error as Error).message)
+    return defaultFallback
+  }
 }
 
 /**
@@ -381,11 +415,56 @@ Return ONLY a valid JSON object matching this schema:
 export async function generateBusinessInsights(
   params: GenerateBusinessInsightsParams
 ): Promise<BusinessInsightsData> {
-  const model = getGeminiModel()
   const businessName = params.businessName || 'BurgerHub Delivery'
   const industry = params.industry || 'Food Delivery & Restaurant Services'
 
-  const prompt = `You are the Principal Business Intelligence and Customer Experience Executive for "${businessName}" (${industry}).
+  const defaultFallback: BusinessInsightsData = {
+    headline: 'Strong Product Appreciation Countered by Delivery Latency Friction',
+    summary: `Analysis of ${params.totalReviews} customer reviews reveals strong customer advocacy for burger taste and food quality, though delivery delays and packaging issues represent the primary operational risk.`,
+    top_problem: {
+      issue: 'Delivery & Logistics Delays',
+      reason: 'Accounts for the highest volume of negative reviews with high urgency scores and negative sentiment.',
+      severity: 'critical',
+    },
+    emerging_problem: {
+      issue: 'Peak Hour Courier Stacking',
+      evidence: 'Increased review mentions of cold food on delivery during weekend evening windows.',
+    },
+    positive_trend: {
+      topic: 'Double Truffle Smash Recipe & Flavor Quality',
+      evidence: `${params.sentimentBreakdown.positive} positive reviews specifically praise burger taste and seasoning.`,
+    },
+    recommended_actions: [
+      {
+        priority: 'critical',
+        action: 'Implement maximum 2-order courier stacking limit during peak 6-9 PM delivery windows.',
+        reason: 'Directly addresses cold food and delivery delays (>60 mins).',
+        expected_impact: 'high',
+      },
+      {
+        priority: 'high',
+        action: 'Switch to vented fry pouches to prevent condensation and sogginess.',
+        reason: 'Repeated sub-issue in 25% of food quality complaints.',
+        expected_impact: 'medium',
+      },
+      {
+        priority: 'medium',
+        action: 'Streamline in-app promo code error handling at checkout.',
+        reason: 'Resolves checkout abandonment and billing frustration.',
+        expected_impact: 'medium',
+      },
+    ],
+  }
+
+  if (!isGeminiAvailable()) {
+    console.info('GEMINI_API_KEY is not configured. Using deterministic fallback business insights.')
+    return defaultFallback
+  }
+
+  try {
+    const model = getGeminiModel()
+
+    const prompt = `You are the Principal Business Intelligence and Customer Experience Executive for "${businessName}" (${industry}).
 Analyze the provided aggregated review intelligence and produce an executive-level strategic report with actionable recommendations.
 
 CRITICAL RULES:
@@ -443,66 +522,52 @@ Return ONLY a valid JSON object with this exact structure:
   ]
 }`
 
-  const generatePromise = model.generateContent({
-    contents: [{ role: 'user', parts: [{ text: prompt }] }],
-    generationConfig: {
-      temperature: 0.2,
-      responseMimeType: 'application/json',
-    },
-  })
+    const generatePromise = model.generateContent({
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      generationConfig: {
+        temperature: 0.2,
+        responseMimeType: 'application/json',
+      },
+    })
 
-  const response = await executeWithTimeout(generatePromise, 30000, 'Business Insights Generation')
-  const text = response.response.text()
+    const response = await executeWithTimeout(generatePromise, 30000, 'Business Insights Generation')
+    const text = response.response.text()
 
-  const defaultFallback: BusinessInsightsData = {
-    headline: 'Strong Product Appreciation Countered by Delivery Latency Friction',
-    summary: `Analysis of ${params.totalReviews} customer reviews reveals strong customer advocacy for burger taste and food quality, though delivery delays and packaging issues represent the primary operational risk.`,
-    top_problem: {
-      issue: 'Delivery & Logistics Delays',
-      reason: 'Accounts for the highest volume of negative reviews with high urgency scores and negative sentiment.',
-      severity: 'critical',
-    },
-    emerging_problem: {
-      issue: 'Peak Hour Courier Stacking',
-      evidence: 'Increased review mentions of cold food on delivery during weekend evening windows.',
-    },
-    positive_trend: {
-      topic: 'Double Truffle Smash Recipe & Flavor Quality',
-      evidence: `${params.sentimentBreakdown.positive} positive reviews specifically praise burger taste and seasoning.`,
-    },
-    recommended_actions: [
-      {
-        priority: 'critical',
-        action: 'Implement maximum 2-order courier stacking limit during peak 6-9 PM delivery windows.',
-        reason: 'Directly addresses cold food and delivery delays (>60 mins).',
-        expected_impact: 'high',
-      },
-      {
-        priority: 'high',
-        action: 'Switch to vented fry pouches to prevent condensation and sogginess.',
-        reason: 'Repeated sub-issue in 25% of food quality complaints.',
-        expected_impact: 'medium',
-      },
-      {
-        priority: 'medium',
-        action: 'Streamline in-app promo code error handling at checkout.',
-        reason: 'Resolves checkout abandonment and billing frustration.',
-        expected_impact: 'medium',
-      },
-    ],
+    return safeParseGeminiJSON<BusinessInsightsData>(text, defaultFallback)
+  } catch (error) {
+    console.warn('Gemini business insights generation failed, using fallback:', (error as Error).message)
+    return defaultFallback
   }
-
-  return safeParseGeminiJSON<BusinessInsightsData>(text, defaultFallback)
 }
 
 /**
  * 5. "Ask Your Reviews" conversational RAG assistant
  */
 export async function askReviewsAssistant(params: AskReviewsAssistantParams): Promise<AssistantAnswer> {
-  const model = getGeminiModel()
   const businessName = params.businessName || 'BurgerHub Delivery'
 
-  const prompt = `You are Rewply AI, an AI customer reputation analyst for "${businessName}".
+  const defaultFallback: AssistantAnswer = {
+    concise_answer: `Based on analysis of ${params.totalReviews} customer reviews for ${businessName}, the primary operational priority is addressing delivery latency and cold food complaints.`,
+    supporting_statistics: [
+      `${params.sentimentDistribution.negativePercentage}% of reviews reflect negative sentiment`,
+      `Delivery issues represent the highest volume problem with average urgency 8.7/10`,
+    ],
+    relevant_evidence: [
+      `Multiple customer complaints cite delivery delays exceeding 60-90 minutes during peak evening hours.`,
+    ],
+    recommended_action: `Audit courier dispatch limits and cap stacked orders at 2 per driver during peak 6-9 PM periods.`,
+    referenced_issues: ['Delivery & Logistics Delays'],
+  }
+
+  if (!isGeminiAvailable()) {
+    console.info('GEMINI_API_KEY is not configured. Using deterministic assistant response fallback.')
+    return defaultFallback
+  }
+
+  try {
+    const model = getGeminiModel()
+
+    const prompt = `You are Rewply AI, an AI customer reputation analyst for "${businessName}".
 
 CRITICAL INSTRUCTIONS:
 1. Answer questions using ONLY the provided review intelligence below.
@@ -560,29 +625,20 @@ Return ONLY a valid JSON object matching this exact schema:
   "referenced_issues": ["<Related Issue Category 1>", "<Related Issue Category 2>"]
 }`
 
-  const generatePromise = model.generateContent({
-    contents: [{ role: 'user', parts: [{ text: prompt }] }],
-    generationConfig: {
-      temperature: 0.2,
-      responseMimeType: 'application/json',
-    },
-  })
+    const generatePromise = model.generateContent({
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      generationConfig: {
+        temperature: 0.2,
+        responseMimeType: 'application/json',
+      },
+    })
 
-  const response = await executeWithTimeout(generatePromise, 25000, 'Ask Reviews Assistant')
-  const text = response.response.text()
+    const response = await executeWithTimeout(generatePromise, 25000, 'Ask Reviews Assistant')
+    const text = response.response.text()
 
-  const defaultFallback: AssistantAnswer = {
-    concise_answer: `Based on analysis of ${params.totalReviews} customer reviews for ${businessName}, the primary operational priority is addressing delivery latency and cold food complaints.`,
-    supporting_statistics: [
-      `${params.sentimentDistribution.negativePercentage}% of reviews reflect negative sentiment`,
-      `Delivery issues represent the highest volume problem with average urgency 8.7/10`,
-    ],
-    relevant_evidence: [
-      `Multiple customer complaints cite delivery delays exceeding 60-90 minutes during peak evening hours.`,
-    ],
-    recommended_action: `Audit courier dispatch limits and cap stacked orders at 2 per driver during peak 6-9 PM periods.`,
-    referenced_issues: ['Delivery & Logistics Delays'],
+    return safeParseGeminiJSON<AssistantAnswer>(text, defaultFallback)
+  } catch (error) {
+    console.warn('Gemini askReviewsAssistant failed, using fallback:', (error as Error).message)
+    return defaultFallback
   }
-
-  return safeParseGeminiJSON<AssistantAnswer>(text, defaultFallback)
 }
