@@ -47,7 +47,7 @@ const DEMO_STEPS: DemoStep[] = [
     explanation:
       'Rewply AI connects to Google, Yelp, and Trustpilot to provide a live Reputation Health Score (82/100) and review stream for BurgerHub Delivery.',
     actionLabel: 'Inspect Overview',
-    icon: <Inbox className="w-4 h-4 text-indigo-400" />,
+    icon: <Inbox className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />,
   },
   {
     stepNumber: 2,
@@ -56,7 +56,7 @@ const DEMO_STEPS: DemoStep[] = [
     explanation:
       'When a new review arrives, Rewply AI immediately triggers the Google Gemini triage pipeline to extract sentiment, urgency, and operational category.',
     actionLabel: '⚡ Ingest & Analyze Review',
-    icon: <Sparkles className="w-4 h-4 text-indigo-400" />,
+    icon: <Sparkles className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />,
   },
   {
     stepNumber: 3,
@@ -65,7 +65,7 @@ const DEMO_STEPS: DemoStep[] = [
     explanation:
       'Gemini extracts the exact primary issue, sub-issues, customer emotion, intent, urgency score, and recommended next action in structured JSON.',
     actionLabel: 'View AI Analysis Breakdown',
-    icon: <CheckCircle2 className="w-4 h-4 text-emerald-400" />,
+    icon: <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />,
   },
   {
     stepNumber: 4,
@@ -74,7 +74,7 @@ const DEMO_STEPS: DemoStep[] = [
     explanation:
       'High-risk complaints (billing disputes, food safety, delivery disasters) automatically bubble to the top of the inbox with crimson alert badges.',
     actionLabel: 'Filter Critical Reviews',
-    icon: <Flame className="w-4 h-4 text-rose-400" />,
+    icon: <Flame className="w-4 h-4 text-rose-600 dark:text-rose-400" />,
   },
   {
     stepNumber: 5,
@@ -83,7 +83,7 @@ const DEMO_STEPS: DemoStep[] = [
     explanation:
       'Generates custom 50–100 word replies matching customer tone (empathetic, apologetic, friendly) without inventing refunds or legal liabilities.',
     actionLabel: 'Open AI Response Studio',
-    icon: <MessageSquare className="w-4 h-4 text-purple-400" />,
+    icon: <MessageSquare className="w-4 h-4 text-purple-600 dark:text-purple-400" />,
   },
   {
     stepNumber: 6,
@@ -92,7 +92,7 @@ const DEMO_STEPS: DemoStep[] = [
     explanation:
       'Identifies operational bottlenecks (e.g. Delivery Delays) by calculating period-over-period trend changes (+38%) and objective severity (9/10).',
     actionLabel: 'Inspect Recurring Problems',
-    icon: <BarChart3 className="w-4 h-4 text-rose-400" />,
+    icon: <BarChart3 className="w-4 h-4 text-rose-600 dark:text-rose-400" />,
   },
   {
     stepNumber: 7,
@@ -101,7 +101,7 @@ const DEMO_STEPS: DemoStep[] = [
     explanation:
       'Gemini synthesizes all review data into a strategic headline, top problem, emerging trend, and prioritized P1/P2/P3 operational action plan.',
     actionLabel: 'View AI Business Insights',
-    icon: <Lightbulb className="w-4 h-4 text-amber-400" />,
+    icon: <Lightbulb className="w-4 h-4 text-amber-600 dark:text-amber-400" />,
   },
   {
     stepNumber: 8,
@@ -110,7 +110,7 @@ const DEMO_STEPS: DemoStep[] = [
     explanation:
       'Business owners can ask natural language questions (e.g. "What should we fix first?"). Gemini answers using only verified review data.',
     actionLabel: 'Ask: "What should we fix first?"',
-    icon: <HelpCircle className="w-4 h-4 text-indigo-400" />,
+    icon: <HelpCircle className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />,
   },
   {
     stepNumber: 9,
@@ -119,7 +119,7 @@ const DEMO_STEPS: DemoStep[] = [
     explanation:
       'Turns intelligence into concrete countermeasures that managers can mark as "Under Investigation" or "Resolved" with 1 click.',
     actionLabel: 'Open Action Center',
-    icon: <Zap className="w-4 h-4 text-rose-400" />,
+    icon: <Zap className="w-4 h-4 text-rose-600 dark:text-rose-400" />,
   },
 ]
 
@@ -199,14 +199,14 @@ export function DemoModeGuide({
 
   return (
     <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 w-full max-w-4xl px-4 animate-in slide-in-from-bottom-6 duration-300">
-      <div className="p-5 rounded-3xl bg-gray-950/95 border border-indigo-500/50 shadow-2xl shadow-indigo-950/60 backdrop-blur-xl space-y-4">
+      <div className="p-5 rounded-3xl bg-white/95 dark:bg-gray-950/95 border border-indigo-200 dark:border-indigo-500/50 shadow-2xl shadow-indigo-950/20 dark:shadow-indigo-950/60 backdrop-blur-xl space-y-4 text-slate-900 dark:text-white">
         {/* Top Bar */}
-        <div className="flex items-center justify-between gap-3 border-b border-gray-800/80 pb-3">
+        <div className="flex items-center justify-between gap-3 border-b border-slate-200 dark:border-gray-800/80 pb-3">
           <div className="flex items-center gap-2.5">
             <span className="flex items-center gap-1.5 text-xs font-black uppercase tracking-wider px-2.5 py-1 rounded-xl bg-indigo-600 text-white shadow-md shadow-indigo-600/30">
               <Play className="w-3.5 h-3.5 fill-current" /> Demo Mode
             </span>
-            <span className="text-xs text-gray-400 font-semibold">
+            <span className="text-xs text-slate-500 dark:text-gray-400 font-semibold">
               Step {step.stepNumber} of {DEMO_STEPS.length}
             </span>
           </div>
@@ -215,7 +215,7 @@ export function DemoModeGuide({
             <button
               onClick={handleReset}
               disabled={isResetting}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-gray-900 hover:bg-gray-800 border border-gray-800 text-xs font-semibold text-gray-300 hover:text-white transition-colors disabled:opacity-50"
+              className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-gray-900 dark:hover:bg-gray-800 border border-slate-200 dark:border-gray-800 text-xs font-semibold text-slate-700 hover:text-slate-900 dark:text-gray-300 dark:hover:text-white transition-colors disabled:opacity-50"
               title="Reset dataset back to original 50 BurgerHub reviews"
             >
               <RotateCcw className={`w-3.5 h-3.5 ${isResetting ? 'animate-spin' : ''}`} />
@@ -224,7 +224,7 @@ export function DemoModeGuide({
 
             <button
               onClick={onClose}
-              className="p-1.5 rounded-xl text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
+              className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 dark:text-gray-400 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-gray-800 transition-colors"
               title="Exit Demo Mode"
             >
               <X className="w-4 h-4" />
@@ -236,14 +236,14 @@ export function DemoModeGuide({
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
           <div className="md:col-span-8 space-y-1.5">
             <div className="flex items-center gap-2">
-              <div className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+              <div className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
                 {step.icon}
               </div>
-              <h4 className="text-sm sm:text-base font-bold text-white tracking-tight">
-                {step.title}: <span className="text-indigo-400 font-normal">{step.subtitle}</span>
+              <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white tracking-tight">
+                {step.title}: <span className="text-indigo-600 dark:text-indigo-400 font-normal">{step.subtitle}</span>
               </h4>
             </div>
-            <p className="text-xs text-gray-300 leading-relaxed font-normal pl-8">
+            <p className="text-xs text-slate-600 dark:text-gray-300 leading-relaxed font-normal pl-8">
               {step.explanation}
             </p>
           </div>
@@ -265,7 +265,7 @@ export function DemoModeGuide({
               <button
                 onClick={handlePrev}
                 disabled={isFirst}
-                className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-gray-900 hover:bg-gray-800 text-xs font-semibold text-gray-400 hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-gray-900 dark:hover:bg-gray-800 text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-gray-400 dark:hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
                 <span>Back</span>
@@ -297,10 +297,10 @@ export function DemoModeGuide({
                 }}
                 className={`h-1.5 flex-1 rounded-full transition-all ${
                   isCurrent
-                    ? 'bg-indigo-500 shadow-sm shadow-indigo-500/50'
+                    ? 'bg-indigo-600 shadow-sm shadow-indigo-600/50'
                     : isDone
-                    ? 'bg-indigo-900'
-                    : 'bg-gray-800'
+                    ? 'bg-indigo-300 dark:bg-indigo-900'
+                    : 'bg-slate-200 dark:bg-gray-800'
                 }`}
                 title={`Step ${s.stepNumber}: ${s.title}`}
               />

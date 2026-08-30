@@ -68,29 +68,29 @@ export function ReviewInboxFilters({
   }
 
   const filterButtons: Array<{ id: QuickFilter; label: string; icon: React.ReactNode; count: number; color: string }> = [
-    { id: 'all', label: 'All', icon: <Inbox className="w-3.5 h-3.5" />, count: counts.all, color: 'text-gray-400' },
-    { id: 'critical', label: 'Critical', icon: <Flame className="w-3.5 h-3.5 text-rose-500" />, count: counts.critical, color: 'text-rose-400' },
-    { id: 'high', label: 'High', icon: <AlertCircle className="w-3.5 h-3.5 text-amber-500" />, count: counts.high, color: 'text-amber-400' },
-    { id: 'medium', label: 'Medium', icon: <SlidersHorizontal className="w-3.5 h-3.5 text-yellow-500" />, count: counts.medium, color: 'text-yellow-400' },
-    { id: 'low', label: 'Low', icon: <span className="w-2 h-2 rounded-full bg-emerald-500" />, count: counts.low, color: 'text-emerald-400' },
-    { id: 'negative', label: 'Negative', icon: <ThumbsDown className="w-3.5 h-3.5 text-rose-400" />, count: counts.negative, color: 'text-rose-400' },
-    { id: 'positive', label: 'Positive', icon: <ThumbsUp className="w-3.5 h-3.5 text-emerald-400" />, count: counts.positive, color: 'text-emerald-400' },
-    { id: 'unanswered', label: 'Unanswered', icon: <Clock className="w-3.5 h-3.5 text-indigo-400" />, count: counts.unanswered, color: 'text-indigo-400' },
+    { id: 'all', label: 'All', icon: <Inbox className="w-3.5 h-3.5" />, count: counts.all, color: 'text-slate-600 dark:text-gray-400' },
+    { id: 'critical', label: 'Critical', icon: <Flame className="w-3.5 h-3.5 text-rose-500" />, count: counts.critical, color: 'text-rose-600 dark:text-rose-400' },
+    { id: 'high', label: 'High', icon: <AlertCircle className="w-3.5 h-3.5 text-amber-500" />, count: counts.high, color: 'text-amber-600 dark:text-amber-400' },
+    { id: 'medium', label: 'Medium', icon: <SlidersHorizontal className="w-3.5 h-3.5 text-yellow-500" />, count: counts.medium, color: 'text-yellow-600 dark:text-yellow-400' },
+    { id: 'low', label: 'Low', icon: <span className="w-2 h-2 rounded-full bg-emerald-500" />, count: counts.low, color: 'text-emerald-600 dark:text-emerald-400' },
+    { id: 'negative', label: 'Negative', icon: <ThumbsDown className="w-3.5 h-3.5 text-rose-500 dark:text-rose-400" />, count: counts.negative, color: 'text-rose-600 dark:text-rose-400' },
+    { id: 'positive', label: 'Positive', icon: <ThumbsUp className="w-3.5 h-3.5 text-emerald-500 dark:text-emerald-400" />, count: counts.positive, color: 'text-emerald-600 dark:text-emerald-400' },
+    { id: 'unanswered', label: 'Unanswered', icon: <Clock className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />, count: counts.unanswered, color: 'text-indigo-600 dark:text-indigo-400' },
   ]
 
   return (
-    <div className="p-4 rounded-2xl bg-[#0b0f19] border border-white/5 shadow-sm space-y-4">
+    <div className="p-4 rounded-2xl bg-white dark:bg-[#0b0f19] border border-slate-200 dark:border-white/5 shadow-sm space-y-4">
       {/* Top row: Search, Platform, Sort, Reset */}
       <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
         {/* Search Input */}
         <div className="relative flex-1 max-w-md">
-          <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-slate-400 dark:text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Search by customer, keywords, issues, complaints..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 bg-gray-950 border border-gray-800 rounded-xl text-xs text-gray-200 placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition-colors"
+            className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-gray-950 border border-slate-300 dark:border-gray-800 rounded-xl text-xs text-slate-800 dark:text-gray-200 placeholder-slate-400 dark:placeholder-gray-500 focus:outline-none focus:border-indigo-500 transition-colors"
           />
         </div>
 
@@ -100,7 +100,7 @@ export function ReviewInboxFilters({
           <select
             value={selectedPlatform}
             onChange={(e) => onPlatformChange(e.target.value)}
-            className="px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-xs text-gray-200 focus:outline-none focus:border-indigo-500"
+            className="px-3 py-2 bg-slate-50 dark:bg-gray-950 border border-slate-300 dark:border-gray-800 rounded-xl text-xs text-slate-800 dark:text-gray-200 focus:outline-none focus:border-indigo-500"
           >
             <option value="all">All Platforms</option>
             <option value="google">Google Reviews</option>
@@ -112,7 +112,7 @@ export function ReviewInboxFilters({
           <select
             value={sortBy}
             onChange={(e) => onSortChange(e.target.value as SortOption)}
-            className="px-3 py-2 bg-gray-950 border border-gray-800 rounded-xl text-xs text-gray-200 focus:outline-none focus:border-indigo-500 font-medium"
+            className="px-3 py-2 bg-slate-50 dark:bg-gray-950 border border-slate-300 dark:border-gray-800 rounded-xl text-xs text-slate-800 dark:text-gray-200 focus:outline-none focus:border-indigo-500 font-medium"
           >
             <option value="highest_priority">Sort: Highest Priority</option>
             <option value="most_recent">Sort: Most Recent</option>
@@ -123,7 +123,7 @@ export function ReviewInboxFilters({
           {/* Reset Button */}
           <button
             onClick={onReset}
-            className="p-2 rounded-xl bg-gray-950 border border-gray-800 hover:bg-gray-800 text-gray-400 hover:text-gray-200 transition-colors"
+            className="p-2 rounded-xl bg-slate-50 dark:bg-gray-950 border border-slate-300 dark:border-gray-800 hover:bg-slate-100 dark:hover:bg-gray-800 text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-gray-200 transition-colors"
             title="Reset All Filters"
           >
             <RotateCcw className="w-4 h-4" />
@@ -142,7 +142,7 @@ export function ReviewInboxFilters({
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all ${
                 isActive
                   ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/20'
-                  : 'bg-gray-900/50 border border-white/5 text-gray-400 hover:text-gray-200 hover:bg-gray-800'
+                  : 'bg-slate-100 dark:bg-gray-900/50 border border-slate-200 dark:border-white/5 text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-gray-200 hover:bg-slate-200 dark:hover:bg-gray-800'
               }`}
             >
               {btn.icon}
@@ -151,7 +151,7 @@ export function ReviewInboxFilters({
                 className={`px-1.5 py-0.2 rounded-full text-[10px] font-semibold ${
                   isActive
                     ? 'bg-white/20 text-white'
-                    : 'bg-gray-900 text-gray-400 border border-gray-800'
+                    : 'bg-slate-200 dark:bg-gray-900 text-slate-700 dark:text-gray-400 border border-slate-300 dark:border-gray-800'
                 }`}
               >
                 {btn.count}

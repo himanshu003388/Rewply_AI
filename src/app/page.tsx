@@ -462,7 +462,7 @@ export default function DashboardPage() {
   }, [allReviews, selectedReview])
 
   return (
-    <div className="min-h-screen bg-[#06080e] text-gray-100 flex flex-col font-sans pb-28 selection:bg-indigo-500/30 selection:text-indigo-200">
+    <div className="min-h-screen transition-colors duration-200 bg-slate-50 dark:bg-[#06080e] text-slate-900 dark:text-gray-100 flex flex-col font-sans pb-28 selection:bg-indigo-500/30 selection:text-indigo-900 dark:selection:text-indigo-200">
       {/* HEADER: Rewply AI, Business Context, Demo Mode Toggle & Simulate Review Button */}
       <Header
         isUsingFallback={isUsingFallback}
@@ -478,35 +478,35 @@ export default function DashboardPage() {
       {/* Main Container */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-8 w-full">
         {/* Title Bar & Layout Switcher */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-800/80 pb-5">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-gray-800/80 pb-5">
           <div>
             <div className="flex items-center gap-2.5 flex-wrap mb-1">
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-50 tracking-tight">
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-gray-50 tracking-tight">
                 Review Intelligence
               </h1>
-              <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+              <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
                 <Sparkles className="w-3.5 h-3.5" /> Google Gemini AI
               </span>
               {isDemoModeActive && (
-                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/40">
                   Demo Guide Active
                 </span>
               )}
             </div>
-            <p className="text-xs sm:text-sm text-gray-400 mt-1">
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-gray-400 mt-1">
               Automated review triage, recurring problems intelligence, and brand-aligned response drafts for{' '}
-              <strong className="text-gray-200">BurgerHub Delivery</strong>.
+              <strong className="text-slate-800 dark:text-gray-200">BurgerHub Delivery</strong>.
             </p>
           </div>
 
           {/* View Mode Controls */}
-          <div className="flex items-center p-1 rounded-xl bg-[#0b0f19] border border-white/5 self-start md:self-auto flex-wrap gap-1 shadow-sm">
+          <div className="flex items-center p-1 rounded-2xl bg-white dark:bg-[#0b0f19] border border-slate-200 dark:border-white/5 self-start md:self-auto flex-wrap gap-1 shadow-sm">
             <button
               onClick={() => setViewMode('3-column')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
                 viewMode === '3-column'
-                  ? 'bg-gray-800 text-white shadow-sm'
-                  : 'text-gray-500 hover:text-gray-300'
+                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/20'
+                  : 'text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-gray-200 hover:bg-slate-100 dark:hover:bg-gray-800/50'
               }`}
             >
               <LayoutGrid className="w-3.5 h-3.5" />
@@ -514,10 +514,10 @@ export default function DashboardPage() {
             </button>
             <button
               onClick={() => setViewMode('inbox')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
                 viewMode === 'inbox'
-                  ? 'bg-gray-800 text-white shadow-sm'
-                  : 'text-gray-500 hover:text-gray-300'
+                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/20'
+                  : 'text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-gray-200 hover:bg-slate-100 dark:hover:bg-gray-800/50'
               }`}
             >
               <Inbox className="w-3.5 h-3.5" />
@@ -525,10 +525,10 @@ export default function DashboardPage() {
             </button>
             <button
               onClick={() => setViewMode('actions')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
                 viewMode === 'actions'
-                  ? 'bg-gray-800 text-white shadow-sm'
-                  : 'text-gray-500 hover:text-gray-300'
+                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/20'
+                  : 'text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-gray-200 hover:bg-slate-100 dark:hover:bg-gray-800/50'
               }`}
             >
               <Zap className="w-3.5 h-3.5" />
@@ -536,10 +536,10 @@ export default function DashboardPage() {
             </button>
             <button
               onClick={() => setViewMode('problems')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
                 viewMode === 'problems'
-                  ? 'bg-gray-800 text-white shadow-sm'
-                  : 'text-gray-500 hover:text-gray-300'
+                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/20'
+                  : 'text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-gray-200 hover:bg-slate-100 dark:hover:bg-gray-800/50'
               }`}
             >
               <BarChart3 className="w-3.5 h-3.5" />
@@ -547,10 +547,10 @@ export default function DashboardPage() {
             </button>
             <button
               onClick={() => setViewMode('insights')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
                 viewMode === 'insights'
-                  ? 'bg-gray-800 text-white shadow-sm'
-                  : 'text-gray-500 hover:text-gray-300'
+                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/20'
+                  : 'text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-gray-200 hover:bg-slate-100 dark:hover:bg-gray-800/50'
               }`}
             >
               <Lightbulb className="w-3.5 h-3.5" />
@@ -558,10 +558,10 @@ export default function DashboardPage() {
             </button>
             <button
               onClick={() => setViewMode('assistant')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
                 viewMode === 'assistant'
-                  ? 'bg-gray-800 text-white shadow-sm'
-                  : 'text-gray-500 hover:text-gray-300'
+                  ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/20'
+                  : 'text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-gray-200 hover:bg-slate-100 dark:hover:bg-gray-800/50'
               }`}
             >
               <MessageSquare className="w-3.5 h-3.5" />
@@ -600,12 +600,12 @@ export default function DashboardPage() {
               <div className="lg:col-span-5 space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                    <div className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
                       <Inbox className="w-4 h-4" />
                     </div>
-                    <h3 className="text-sm font-bold text-white tracking-tight">Review Inbox</h3>
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">Review Inbox</h3>
                   </div>
-                  <span className="text-xs text-gray-400 font-medium">
+                  <span className="text-xs text-slate-500 dark:text-gray-400 font-medium">
                     {filteredAndSortedReviews.length} of {allReviews.length}
                   </span>
                 </div>
@@ -642,12 +642,12 @@ export default function DashboardPage() {
               <div className="lg:col-span-4 space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div className="p-1.5 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                    <div className="p-1.5 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
                       <BarChart3 className="w-4 h-4" />
                     </div>
-                    <h3 className="text-sm font-bold text-white tracking-tight">Recurring Problems</h3>
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">Recurring Problems</h3>
                   </div>
-                  <span className="text-xs text-gray-400 font-medium">
+                  <span className="text-xs text-slate-500 dark:text-gray-400 font-medium">
                     {recurringIssuesData?.length || 0} Clusters
                   </span>
                 </div>
@@ -663,12 +663,12 @@ export default function DashboardPage() {
               <div className="lg:col-span-3 space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <div className="p-1.5 rounded-lg bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                    <div className="p-1.5 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
                       <Lightbulb className="w-4 h-4" />
                     </div>
-                    <h3 className="text-sm font-bold text-white tracking-tight">AI Insights</h3>
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">AI Insights</h3>
                   </div>
-                  <span className="text-xs text-indigo-400 font-semibold">Gemini 2.5</span>
+                  <span className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold">Gemini 2.5</span>
                 </div>
 
                 <AIInsightsSection
@@ -745,12 +745,12 @@ export default function DashboardPage() {
         )}
 
         {/* BELOW: Recharts Visualizations (Sentiment over time, Rating distribution, Issue distribution, Response performance) */}
-        <section aria-label="Analytics & Chart Diagnostics" className="space-y-4 pt-4 border-t border-gray-800/80">
+        <section aria-label="Analytics & Chart Diagnostics" className="space-y-4 pt-4 border-t border-slate-200 dark:border-gray-800/80">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold uppercase tracking-wider text-gray-300">
+            <h3 className="text-sm font-bold uppercase tracking-wider text-slate-700 dark:text-gray-300">
               Operational Analytics &amp; Visualizations
             </h3>
-            <span className="text-xs text-gray-500">Live Supabase Telemetry</span>
+            <span className="text-xs text-slate-500 dark:text-gray-500">Live Supabase Telemetry</span>
           </div>
 
           <AnalyticsCharts reviews={allReviews} issues={issues} />

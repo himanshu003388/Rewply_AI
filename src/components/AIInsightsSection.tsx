@@ -30,20 +30,20 @@ export function AIInsightsSection({
   return (
     <div className="space-y-6">
       {/* Executive Header Banner */}
-      <div className="p-6 rounded-3xl bg-gradient-to-r from-indigo-950/60 via-purple-950/40 to-gray-900 border border-indigo-500/30 shadow-xl relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="p-6 rounded-3xl bg-gradient-to-r from-indigo-50 via-purple-50 to-slate-100 dark:from-indigo-950/60 dark:via-purple-950/40 dark:to-gray-900 border border-indigo-200 dark:border-indigo-500/30 shadow-sm relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="space-y-1.5 max-w-2xl">
           <div className="flex items-center gap-2">
-            <span className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+            <span className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30">
               <Sparkles className="w-3.5 h-3.5" /> Gemini Executive Intelligence
             </span>
-            <span className="text-xs text-gray-400">• Cross-Platform Intelligence</span>
+            <span className="text-xs text-slate-500 dark:text-gray-400">• Cross-Platform Intelligence</span>
           </div>
 
-          <h2 className="text-lg sm:text-xl font-black text-white tracking-tight">
+          <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">
             {insights?.headline || 'AI Business Insights & Strategic Action Plan'}
           </h2>
 
-          <p className="text-xs sm:text-sm text-gray-300 leading-relaxed font-normal">
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-gray-300 leading-relaxed font-normal">
             {insights?.summary ||
               'Transform aggregated customer feedback, recurring operational problems, and sentiment velocity into high-impact business decisions.'}
           </p>
@@ -70,10 +70,10 @@ export function AIInsightsSection({
       {isLoading && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="p-6 rounded-3xl bg-[#0b0f19] border border-white/5 animate-pulse space-y-3">
-              <div className="h-4 w-32 bg-gray-800 rounded"></div>
-              <div className="h-6 w-full bg-gray-800/80 rounded"></div>
-              <div className="h-12 w-full bg-gray-800/50 rounded"></div>
+            <div key={i} className="p-6 rounded-3xl bg-white dark:bg-[#0b0f19] border border-slate-200 dark:border-white/5 animate-pulse space-y-3 shadow-sm">
+              <div className="h-4 w-32 bg-slate-200 dark:bg-gray-800 rounded"></div>
+              <div className="h-6 w-full bg-slate-200 dark:bg-gray-800/80 rounded"></div>
+              <div className="h-12 w-full bg-slate-100 dark:bg-gray-800/50 rounded"></div>
             </div>
           ))}
         </div>
@@ -84,84 +84,84 @@ export function AIInsightsSection({
           {/* 3-Column Diagnostic Summary */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* 1. Most Important Problem */}
-            <div className="p-5 rounded-3xl bg-[#0b0f19] border border-rose-500/20 shadow-lg shadow-rose-950/20 flex flex-col justify-between space-y-3 relative overflow-hidden">
+            <div className="p-5 rounded-3xl bg-white dark:bg-[#0b0f19] border border-rose-200 dark:border-rose-500/20 shadow-sm flex flex-col justify-between space-y-3 relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-rose-500/50 to-transparent"></div>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-rose-400">
-                    <Flame className="w-4 h-4 text-rose-400" /> Top Priority Problem
+                  <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-rose-700 dark:text-rose-400">
+                    <Flame className="w-4 h-4 text-rose-600 dark:text-rose-400" /> Top Priority Problem
                   </span>
-                  <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/40">
+                  <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-700 dark:bg-rose-500/20 dark:text-rose-300 border border-rose-300 dark:border-rose-500/40">
                     {insights.top_problem.severity || 'Critical'}
                   </span>
                 </div>
 
-                <h4 className="text-sm font-bold text-white tracking-tight">
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                   {insights.top_problem.issue}
                 </h4>
 
-                <p className="text-xs text-gray-300 leading-relaxed font-normal">
+                <p className="text-xs text-slate-600 dark:text-gray-300 leading-relaxed font-normal">
                   {insights.top_problem.reason}
                 </p>
               </div>
 
-              <div className="pt-2 border-t border-rose-500/20 flex items-center gap-1.5 text-[11px] text-rose-300/80 font-medium">
+              <div className="pt-2 border-t border-rose-200 dark:border-rose-500/20 flex items-center gap-1.5 text-[11px] text-rose-700 dark:text-rose-300/80 font-medium">
                 <AlertTriangle className="w-3.5 h-3.5" />
                 <span>Primary driver of customer churn</span>
               </div>
             </div>
 
             {/* 2. Emerging Problem */}
-            <div className="p-5 rounded-3xl bg-[#0b0f19] border border-amber-500/20 shadow-lg shadow-amber-950/20 flex flex-col justify-between space-y-3 relative overflow-hidden">
+            <div className="p-5 rounded-3xl bg-white dark:bg-[#0b0f19] border border-amber-200 dark:border-amber-500/20 shadow-sm flex flex-col justify-between space-y-3 relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-amber-500/50 to-transparent"></div>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-amber-400">
-                    <AlertTriangle className="w-4 h-4 text-amber-400" /> Emerging Problem
+                  <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
+                    <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400" /> Emerging Problem
                   </span>
-                  <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                  <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 border border-amber-300 dark:border-amber-500/30">
                     Rising Pattern
                   </span>
                 </div>
 
-                <h4 className="text-sm font-bold text-white tracking-tight">
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                   {insights.emerging_problem.issue}
                 </h4>
 
-                <p className="text-xs text-gray-300 leading-relaxed font-normal">
+                <p className="text-xs text-slate-600 dark:text-gray-300 leading-relaxed font-normal">
                   {insights.emerging_problem.evidence}
                 </p>
               </div>
 
-              <div className="pt-2 border-t border-amber-500/20 flex items-center gap-1.5 text-[11px] text-amber-300/80 font-medium">
+              <div className="pt-2 border-t border-amber-200 dark:border-amber-500/20 flex items-center gap-1.5 text-[11px] text-amber-700 dark:text-amber-300/80 font-medium">
                 <Target className="w-3.5 h-3.5" />
                 <span>Requires proactive operational adjustment</span>
               </div>
             </div>
 
             {/* 3. Positive Trend */}
-            <div className="p-5 rounded-3xl bg-[#0b0f19] border border-emerald-500/20 shadow-lg shadow-emerald-950/20 flex flex-col justify-between space-y-3 relative overflow-hidden">
+            <div className="p-5 rounded-3xl bg-white dark:bg-[#0b0f19] border border-emerald-200 dark:border-emerald-500/20 shadow-sm flex flex-col justify-between space-y-3 relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent"></div>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-emerald-400">
-                    <TrendingUp className="w-4 h-4 text-emerald-400" /> Positive Trend & Strength
+                  <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+                    <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> Positive Trend & Strength
                   </span>
-                  <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                  <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-500/30">
                     Brand Moat
                   </span>
                 </div>
 
-                <h4 className="text-sm font-bold text-white tracking-tight">
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">
                   {insights.positive_trend.topic}
                 </h4>
 
-                <p className="text-xs text-gray-300 leading-relaxed font-normal">
+                <p className="text-xs text-slate-600 dark:text-gray-300 leading-relaxed font-normal">
                   {insights.positive_trend.evidence}
                 </p>
               </div>
 
-              <div className="pt-2 border-t border-emerald-500/20 flex items-center gap-1.5 text-[11px] text-emerald-300/80 font-medium">
+              <div className="pt-2 border-t border-emerald-200 dark:border-emerald-500/20 flex items-center gap-1.5 text-[11px] text-emerald-700 dark:text-emerald-300/80 font-medium">
                 <CheckCircle2 className="w-3.5 h-3.5" />
                 <span>Key driver of organic positive sentiment</span>
               </div>
@@ -169,20 +169,20 @@ export function AIInsightsSection({
           </div>
 
           {/* Actionable Recommendations Section */}
-          <div className="p-6 rounded-3xl bg-[#0b0f19] border border-white/5 space-y-4">
+          <div className="p-6 rounded-3xl bg-white dark:bg-[#0b0f19] border border-slate-200 dark:border-white/5 space-y-4 shadow-sm">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-                  <Lightbulb className="w-4 h-4 text-indigo-400" />
+                <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+                  <Lightbulb className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-white tracking-tight">Prioritized Action Plan</h3>
-                  <p className="text-xs text-gray-400">Direct operational countermeasures backed by review data</p>
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">Prioritized Action Plan</h3>
+                  <p className="text-xs text-slate-500 dark:text-gray-400">Direct operational countermeasures backed by review data</p>
                 </div>
               </div>
 
-              <span className="text-xs font-semibold text-gray-400 flex items-center gap-1">
-                <FileCheck2 className="w-4 h-4 text-indigo-400" />
+              <span className="text-xs font-semibold text-slate-500 dark:text-gray-400 flex items-center gap-1">
+                <FileCheck2 className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                 <span>{insights.recommended_actions.length} Action Items</span>
               </span>
             </div>
@@ -193,26 +193,26 @@ export function AIInsightsSection({
                 const isHigh = item.priority === 'high'
 
                 const priorityBadge = isCritical ? (
-                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/40 uppercase">
+                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-md bg-rose-500/10 text-rose-700 dark:bg-rose-500/20 dark:text-rose-300 border border-rose-300 dark:border-rose-500/40 uppercase">
                     P1 Critical
                   </span>
                 ) : isHigh ? (
-                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30 uppercase">
+                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-md bg-amber-500/10 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 border border-amber-300 dark:border-amber-500/30 uppercase">
                     P2 High
                   </span>
                 ) : (
-                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-md bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 uppercase">
+                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-md bg-indigo-500/10 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30 uppercase">
                     P3 Medium
                   </span>
                 )
 
                 const impactBadge =
                   item.expected_impact === 'high' ? (
-                    <span className="text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                    <span className="text-[10px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-300 dark:border-emerald-500/20">
                       High Impact
                     </span>
                   ) : (
-                    <span className="text-[10px] font-semibold text-indigo-300 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
+                    <span className="text-[10px] font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-200 dark:border-indigo-500/20">
                       Medium Impact
                     </span>
                   )
@@ -220,7 +220,7 @@ export function AIInsightsSection({
                 return (
                   <div
                     key={idx}
-                    className="p-5 rounded-2xl bg-[#06080e] border border-white/5 flex flex-col justify-between space-y-3 hover:border-white/10 transition-colors"
+                    className="p-5 rounded-2xl bg-slate-50 dark:bg-[#06080e] border border-slate-200 dark:border-white/5 flex flex-col justify-between space-y-3 hover:border-slate-300 dark:hover:border-white/10 transition-colors shadow-sm"
                   >
                     <div className="space-y-2">
                       <div className="flex items-center justify-between gap-2">
@@ -228,18 +228,18 @@ export function AIInsightsSection({
                         {impactBadge}
                       </div>
 
-                      <h5 className="text-xs font-bold text-white leading-snug">
+                      <h5 className="text-xs font-bold text-slate-900 dark:text-white leading-snug">
                         {item.action}
                       </h5>
 
-                      <p className="text-[11px] text-gray-400 leading-relaxed font-normal">
-                        <strong className="text-gray-300">Rationale:</strong> {item.reason}
+                      <p className="text-[11px] text-slate-600 dark:text-gray-400 leading-relaxed font-normal">
+                        <strong className="text-slate-800 dark:text-gray-300">Rationale:</strong> {item.reason}
                       </p>
                     </div>
 
-                    <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[10px] text-gray-500">
+                    <div className="pt-2 border-t border-slate-200 dark:border-white/5 flex items-center justify-between text-[10px] text-slate-500 dark:text-gray-500">
                       <span>Target: Operations & Fleet</span>
-                      <span className="font-semibold text-indigo-400">Action #{idx + 1}</span>
+                      <span className="font-semibold text-indigo-600 dark:text-indigo-400">Action #{idx + 1}</span>
                     </div>
                   </div>
                 )

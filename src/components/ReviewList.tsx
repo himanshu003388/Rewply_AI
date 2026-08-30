@@ -50,18 +50,18 @@ export function ReviewList({
         {[...Array(4)].map((_, i) => (
           <div
             key={i}
-            className="p-5 rounded-2xl bg-[#0b0f19] border border-white/5 animate-pulse space-y-4"
+            className="p-5 rounded-2xl bg-white dark:bg-[#0b0f19] border border-slate-200 dark:border-white/5 animate-pulse space-y-4 shadow-sm"
           >
             <div className="flex items-center justify-between">
-              <div className="h-4 w-32 bg-gray-800 rounded"></div>
-              <div className="h-4 w-20 bg-gray-800 rounded"></div>
+              <div className="h-4 w-32 bg-slate-200 dark:bg-gray-800 rounded"></div>
+              <div className="h-4 w-20 bg-slate-200 dark:bg-gray-800 rounded"></div>
             </div>
-            <div className="h-3 w-48 bg-gray-800/80 rounded"></div>
+            <div className="h-3 w-48 bg-slate-200 dark:bg-gray-800/80 rounded"></div>
             <div className="space-y-2">
-              <div className="h-3 w-full bg-gray-800/60 rounded"></div>
-              <div className="h-3 w-5/6 bg-gray-800/60 rounded"></div>
+              <div className="h-3 w-full bg-slate-100 dark:bg-gray-800/60 rounded"></div>
+              <div className="h-3 w-5/6 bg-slate-100 dark:bg-gray-800/60 rounded"></div>
             </div>
-            <div className="h-8 w-full bg-gray-800/40 rounded"></div>
+            <div className="h-8 w-full bg-slate-100 dark:bg-gray-800/40 rounded"></div>
           </div>
         ))}
       </div>
@@ -71,10 +71,10 @@ export function ReviewList({
   // 2. Error State
   if (isError) {
     return (
-      <div className="p-10 text-center rounded-2xl bg-rose-950/20 border border-rose-800/50 space-y-3">
-        <AlertTriangle className="w-10 h-10 text-rose-400 mx-auto" />
-        <h4 className="text-sm font-semibold text-white">Failed to load customer reviews</h4>
-        <p className="text-xs text-rose-300 max-w-sm mx-auto">
+      <div className="p-10 text-center rounded-2xl bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-800/50 space-y-3">
+        <AlertTriangle className="w-10 h-10 text-rose-500 dark:text-rose-400 mx-auto" />
+        <h4 className="text-sm font-semibold text-slate-900 dark:text-white">Failed to load customer reviews</h4>
+        <p className="text-xs text-rose-700 dark:text-rose-300 max-w-sm mx-auto">
           An error occurred while communicating with the database. Please check your network connection or try again.
         </p>
         {onRetry && (
@@ -93,10 +93,10 @@ export function ReviewList({
   // 3. Empty State
   if (reviews.length === 0) {
     return (
-      <div className="p-12 text-center rounded-2xl bg-[#0b0f19] border border-white/5 space-y-3">
-        <Inbox className="w-10 h-10 text-gray-600 mx-auto" />
-        <h4 className="text-sm font-semibold text-gray-300">No matching reviews found in this view</h4>
-        <p className="text-xs text-gray-500 max-w-sm mx-auto">
+      <div className="p-12 text-center rounded-2xl bg-white dark:bg-[#0b0f19] border border-slate-200 dark:border-white/5 space-y-3 shadow-sm">
+        <Inbox className="w-10 h-10 text-slate-400 dark:text-gray-600 mx-auto" />
+        <h4 className="text-sm font-semibold text-slate-800 dark:text-gray-300">No matching reviews found in this view</h4>
+        <p className="text-xs text-slate-500 dark:text-gray-500 max-w-sm mx-auto">
           Try clearing your search filters or switching to a different priority tab.
         </p>
       </div>
@@ -124,28 +124,28 @@ export function ReviewList({
 
       {/* Pagination Bar */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#0b0f19] border border-white/5 text-xs text-gray-400">
+        <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white dark:bg-[#0b0f19] border border-slate-200 dark:border-white/5 text-xs text-slate-600 dark:text-gray-400 shadow-sm">
           <span>
-            Showing <strong className="text-white">{startIndex + 1}</strong> -{' '}
-            <strong className="text-white">{Math.min(startIndex + ITEMS_PER_PAGE, reviews.length)}</strong> of{' '}
-            <strong className="text-white">{reviews.length}</strong> reviews
+            Showing <strong className="text-slate-900 dark:text-white">{startIndex + 1}</strong> -{' '}
+            <strong className="text-slate-900 dark:text-white">{Math.min(startIndex + ITEMS_PER_PAGE, reviews.length)}</strong> of{' '}
+            <strong className="text-slate-900 dark:text-white">{reviews.length}</strong> reviews
           </span>
 
           <div className="flex items-center gap-2">
             <button
               onClick={handlePrev}
               disabled={currentPage === 1}
-              className="p-2 rounded-xl bg-gray-800 hover:bg-gray-700 disabled:opacity-30 disabled:pointer-events-none transition-colors text-white"
+              className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-gray-800 dark:hover:bg-gray-700 disabled:opacity-30 disabled:pointer-events-none transition-colors text-slate-800 dark:text-white"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <span className="text-xs font-semibold text-gray-300 px-2">
+            <span className="text-xs font-semibold text-slate-700 dark:text-gray-300 px-2">
               Page {currentPage} of {totalPages}
             </span>
             <button
               onClick={handleNext}
               disabled={currentPage === totalPages}
-              className="p-2 rounded-xl bg-gray-800 hover:bg-gray-700 disabled:opacity-30 disabled:pointer-events-none transition-colors text-white"
+              className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-gray-800 dark:hover:bg-gray-700 disabled:opacity-30 disabled:pointer-events-none transition-colors text-slate-800 dark:text-white"
             >
               <ChevronRight className="w-4 h-4" />
             </button>

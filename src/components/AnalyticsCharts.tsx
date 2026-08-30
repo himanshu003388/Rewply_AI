@@ -17,6 +17,7 @@ import {
 } from 'recharts'
 import { Review, Issue } from '@/types/database.types'
 import { TrendingUp, BarChart2, PieChart as PieIcon, Activity, CheckCircle2, Clock } from 'lucide-react'
+import { useTheme } from '@/lib/providers/theme-provider'
 
 interface AnalyticsChartsProps {
   reviews: Review[]
@@ -34,6 +35,8 @@ const RATING_COLORS = ['#f43f5e', '#fb923c', '#facc15', '#a3e635', '#22c55e']
 const ISSUE_COLORS = ['#6366f1', '#ec4899', '#f59e0b', '#06b6d4', '#10b981', '#8b5cf6', '#64748b']
 
 export function AnalyticsCharts({ reviews }: AnalyticsChartsProps) {
+  const { isDark } = useTheme()
+
   // 1. Sentiment Over Time (Grouped by Date)
   const dateGroups: Record<
     string,
@@ -99,20 +102,26 @@ export function AnalyticsCharts({ reviews }: AnalyticsChartsProps) {
   const resolvedCount = approvedCount + sentCount
   const responseRate = totalReviews > 0 ? Math.round((resolvedCount / totalReviews) * 100) : 0
 
+  const gridStroke = isDark ? '#1f2937' : '#e2e8f0'
+  const axisColor = isDark ? '#6b7280' : '#64748b'
+  const tooltipBg = isDark ? '#0f172a' : '#ffffff'
+  const tooltipBorder = isDark ? '#334155' : '#cbd5e1'
+  const tooltipText = isDark ? '#ffffff' : '#0f172a'
+
   return (
     <div className="space-y-6">
       {/* 4-Chart Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* CHART 1: Sentiment Over Time */}
-        <div className="p-5 rounded-3xl bg-[#0b0f19] border border-white/5 shadow-sm flex flex-col justify-between space-y-3">
+        <div className="p-5 rounded-3xl bg-white dark:bg-[#0b0f19] border border-slate-200 dark:border-white/5 shadow-sm flex flex-col justify-between space-y-3">
           <div>
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-gray-300 flex items-center gap-1.5">
-                <TrendingUp className="w-3.5 h-3.5 text-emerald-400" /> Sentiment Over Time
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-gray-300 flex items-center gap-1.5">
+                <TrendingUp className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" /> Sentiment Over Time
               </span>
-              <span className="text-[10px] text-gray-500 font-semibold uppercase">Daily Timeline</span>
+              <span className="text-[10px] text-slate-400 dark:text-gray-500 font-semibold uppercase">Daily Timeline</span>
             </div>
-            <p className="text-[11px] text-gray-400 mt-0.5">Positive vs Negative Review Dynamics</p>
+            <p className="text-[11px] text-slate-500 dark:text-gray-400 mt-0.5">Positive vs Negative Review Dynamics</p>
           </div>
 
           <div className="h-44 w-full">
@@ -128,16 +137,17 @@ export function AnalyticsCharts({ reviews }: AnalyticsChartsProps) {
                     <stop offset="95%" stopColor={SENTIMENT_COLORS.negative} stopOpacity={0.0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" vertical={false} />
-                <XAxis dataKey="date" stroke="#6b7280" fontSize={10} tickLine={false} />
-                <YAxis stroke="#6b7280" fontSize={10} tickLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
+                <XAxis dataKey="date" stroke={axisColor} fontSize={10} tickLine={false} />
+                <YAxis stroke={axisColor} fontSize={10} tickLine={false} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#0f172a',
-                    borderColor: '#334155',
+                    backgroundColor: tooltipBg,
+                    borderColor: tooltipBorder,
                     borderRadius: '0.75rem',
                     fontSize: '11px',
-                    color: '#fff',
+                    color: tooltipText,
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
                   }}
                 />
                 <Area
@@ -162,41 +172,42 @@ export function AnalyticsCharts({ reviews }: AnalyticsChartsProps) {
             </ResponsiveContainer>
           </div>
 
-          <div className="flex items-center justify-between text-[11px] text-gray-400 border-t border-gray-800/80 pt-2">
-            <span className="flex items-center gap-1 text-emerald-400">
+          <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-gray-400 border-t border-slate-200 dark:border-gray-800/80 pt-2">
+            <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
               <span className="w-2 h-2 rounded-full bg-emerald-500" /> Positive Trend
             </span>
-            <span className="flex items-center gap-1 text-rose-400">
+            <span className="flex items-center gap-1 text-rose-600 dark:text-rose-400">
               <span className="w-2 h-2 rounded-full bg-rose-500" /> Negative Friction
             </span>
           </div>
         </div>
 
         {/* CHART 2: Rating Distribution */}
-        <div className="p-5 rounded-3xl bg-[#0b0f19] border border-white/5 shadow-sm flex flex-col justify-between space-y-3">
+        <div className="p-5 rounded-3xl bg-white dark:bg-[#0b0f19] border border-slate-200 dark:border-white/5 shadow-sm flex flex-col justify-between space-y-3">
           <div>
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-gray-300 flex items-center gap-1.5">
-                <BarChart2 className="w-3.5 h-3.5 text-amber-400" /> Rating Distribution
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-gray-300 flex items-center gap-1.5">
+                <BarChart2 className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" /> Rating Distribution
               </span>
-              <span className="text-[10px] text-gray-500 font-semibold uppercase">1★ - 5★ Stars</span>
+              <span className="text-[10px] text-slate-400 dark:text-gray-500 font-semibold uppercase">1★ - 5★ Stars</span>
             </div>
-            <p className="text-[11px] text-gray-400 mt-0.5">Volume Breakdown by Star Tier</p>
+            <p className="text-[11px] text-slate-500 dark:text-gray-400 mt-0.5">Volume Breakdown by Star Tier</p>
           </div>
 
           <div className="h-44 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={ratingDistribution} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" vertical={false} />
-                <XAxis dataKey="name" stroke="#6b7280" fontSize={11} tickLine={false} />
-                <YAxis stroke="#6b7280" fontSize={10} tickLine={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke={gridStroke} vertical={false} />
+                <XAxis dataKey="name" stroke={axisColor} fontSize={11} tickLine={false} />
+                <YAxis stroke={axisColor} fontSize={10} tickLine={false} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#0f172a',
-                    borderColor: '#334155',
+                    backgroundColor: tooltipBg,
+                    borderColor: tooltipBorder,
                     borderRadius: '0.75rem',
                     fontSize: '11px',
-                    color: '#fff',
+                    color: tooltipText,
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
                   }}
                 />
                 <Bar dataKey="count" radius={[6, 6, 0, 0]} name="Reviews">
@@ -208,22 +219,22 @@ export function AnalyticsCharts({ reviews }: AnalyticsChartsProps) {
             </ResponsiveContainer>
           </div>
 
-          <div className="flex items-center justify-between text-[11px] text-gray-400 border-t border-gray-800/80 pt-2">
+          <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-gray-400 border-t border-slate-200 dark:border-gray-800/80 pt-2">
             <span>High Concentration: 1★-2★</span>
-            <span className="text-indigo-400 font-semibold">{totalReviews} Reviews</span>
+            <span className="text-indigo-600 dark:text-indigo-400 font-semibold">{totalReviews} Reviews</span>
           </div>
         </div>
 
         {/* CHART 3: Issue Distribution */}
-        <div className="p-5 rounded-3xl bg-[#0b0f19] border border-white/5 shadow-sm flex flex-col justify-between space-y-3">
+        <div className="p-5 rounded-3xl bg-white dark:bg-[#0b0f19] border border-slate-200 dark:border-white/5 shadow-sm flex flex-col justify-between space-y-3">
           <div>
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-gray-300 flex items-center gap-1.5">
-                <PieIcon className="w-3.5 h-3.5 text-indigo-400" /> Issue Distribution
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-gray-300 flex items-center gap-1.5">
+                <PieIcon className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" /> Issue Distribution
               </span>
-              <span className="text-[10px] text-gray-500 font-semibold uppercase">Category Share</span>
+              <span className="text-[10px] text-slate-400 dark:text-gray-500 font-semibold uppercase">Category Share</span>
             </div>
-            <p className="text-[11px] text-gray-400 mt-0.5">Top Operational Complaint Categories</p>
+            <p className="text-[11px] text-slate-500 dark:text-gray-400 mt-0.5">Top Operational Complaint Categories</p>
           </div>
 
           <div className="h-44 w-full flex items-center justify-center">
@@ -239,56 +250,57 @@ export function AnalyticsCharts({ reviews }: AnalyticsChartsProps) {
                   dataKey="count"
                 >
                   {issueDistribution.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.fill} stroke="#111827" strokeWidth={2} />
+                    <Cell key={`cell-${index}`} fill={entry.fill} stroke={isDark ? '#111827' : '#ffffff'} strokeWidth={2} />
                   ))}
                 </Pie>
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#0f172a',
-                    borderColor: '#334155',
+                    backgroundColor: tooltipBg,
+                    borderColor: tooltipBorder,
                     borderRadius: '0.75rem',
                     fontSize: '11px',
-                    color: '#fff',
+                    color: tooltipText,
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
                   }}
                 />
               </PieChart>
             </ResponsiveContainer>
           </div>
 
-          <div className="flex items-center justify-between text-[10px] text-gray-400 border-t border-gray-800/80 pt-2 truncate">
-            <span className="text-indigo-400 font-medium truncate">
+          <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-gray-400 border-t border-slate-200 dark:border-gray-800/80 pt-2 truncate">
+            <span className="text-indigo-600 dark:text-indigo-400 font-medium truncate">
               Top: {issueDistribution[0]?.name || 'Delivery'} ({issueDistribution[0]?.count || 0})
             </span>
-            <span className="text-gray-500">{issueDistribution.length} Categories</span>
+            <span className="text-slate-400 dark:text-gray-500">{issueDistribution.length} Categories</span>
           </div>
         </div>
 
         {/* CHART 4: Review Volume & Response Performance */}
-        <div className="p-5 rounded-3xl bg-[#0b0f19] border border-white/5 shadow-sm flex flex-col justify-between space-y-3">
+        <div className="p-5 rounded-3xl bg-white dark:bg-[#0b0f19] border border-slate-200 dark:border-white/5 shadow-sm flex flex-col justify-between space-y-3">
           <div>
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-gray-300 flex items-center gap-1.5">
-                <Activity className="w-3.5 h-3.5 text-purple-400" /> Response Performance
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-gray-300 flex items-center gap-1.5">
+                <Activity className="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" /> Response Performance
               </span>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/20">
                 {responseRate}% Rate
               </span>
             </div>
-            <p className="text-[11px] text-gray-400 mt-0.5">Triage, Approval & Resolution Speed</p>
+            <p className="text-[11px] text-slate-500 dark:text-gray-400 mt-0.5">Triage, Approval & Resolution Speed</p>
           </div>
 
           {/* Performance Meter */}
           <div className="space-y-2.5 py-1">
             <div className="space-y-1">
               <div className="flex items-center justify-between text-xs">
-                <span className="flex items-center gap-1 text-emerald-400 font-medium">
+                <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-medium">
                   <CheckCircle2 className="w-3.5 h-3.5" /> Approved & Sent
                 </span>
-                <span className="font-bold text-white">
-                  {resolvedCount} <span className="text-gray-500 font-normal">({responseRate}%)</span>
+                <span className="font-bold text-slate-900 dark:text-white">
+                  {resolvedCount} <span className="text-slate-400 dark:text-gray-500 font-normal">({responseRate}%)</span>
                 </span>
               </div>
-              <div className="h-2 w-full bg-gray-950 rounded-full overflow-hidden border border-gray-800">
+              <div className="h-2 w-full bg-slate-100 dark:bg-gray-950 rounded-full overflow-hidden border border-slate-200 dark:border-gray-800">
                 <div
                   className="h-full bg-emerald-500 rounded-full transition-all duration-500"
                   style={{ width: `${responseRate}%` }}
@@ -298,17 +310,17 @@ export function AnalyticsCharts({ reviews }: AnalyticsChartsProps) {
 
             <div className="space-y-1">
               <div className="flex items-center justify-between text-xs">
-                <span className="flex items-center gap-1 text-amber-400 font-medium">
+                <span className="flex items-center gap-1 text-amber-600 dark:text-amber-400 font-medium">
                   <Clock className="w-3.5 h-3.5" /> Pending Approval
                 </span>
-                <span className="font-bold text-white">
+                <span className="font-bold text-slate-900 dark:text-white">
                   {pendingCount}{' '}
-                  <span className="text-gray-500 font-normal">
+                  <span className="text-slate-400 dark:text-gray-500 font-normal">
                     ({totalReviews > 0 ? Math.round((pendingCount / totalReviews) * 100) : 0}%)
                   </span>
                 </span>
               </div>
-              <div className="h-2 w-full bg-gray-950 rounded-full overflow-hidden border border-gray-800">
+              <div className="h-2 w-full bg-slate-100 dark:bg-gray-950 rounded-full overflow-hidden border border-slate-200 dark:border-gray-800">
                 <div
                   className="h-full bg-amber-500 rounded-full transition-all duration-500"
                   style={{
@@ -319,9 +331,9 @@ export function AnalyticsCharts({ reviews }: AnalyticsChartsProps) {
             </div>
           </div>
 
-          <div className="flex items-center justify-between text-[11px] text-gray-400 border-t border-gray-800/80 pt-2">
+          <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-gray-400 border-t border-slate-200 dark:border-gray-800/80 pt-2">
             <span>{approvedCount} Drafts Approved</span>
-            <span className="text-emerald-400 font-semibold">{sentCount} Published</span>
+            <span className="text-emerald-600 dark:text-emerald-400 font-semibold">{sentCount} Published</span>
           </div>
         </div>
       </div>
