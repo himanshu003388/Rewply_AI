@@ -63,6 +63,22 @@ export function Header({
 
           {/* Right Actions: Demo Tour, Simulate Review, DB Status Chip & Theme Toggle */}
           <div className="flex items-center gap-2 sm:gap-2.5">
+            
+            {/* Auto-Pilot Toggle */}
+            <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-indigo-50/50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-500/20 group cursor-pointer hover:border-indigo-300 dark:hover:border-indigo-500/50 transition-colors" title="AI automatically drafts and sends replies to 5-star reviews">
+              <Sparkles className="w-4 h-4 text-indigo-500" />
+              <span className="text-xs font-bold text-indigo-700 dark:text-indigo-300">Auto-Pilot</span>
+              <div className="w-7 h-4 bg-indigo-500 rounded-full relative ml-1 shadow-inner shadow-indigo-700/20">
+                <div className="absolute right-0.5 top-0.5 w-3 h-3 bg-white rounded-full shadow-sm"></div>
+              </div>
+            </div>
+
+            {/* Business Impact Badge */}
+            <div className="hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400 group cursor-help transition-all">
+              <span className="text-xs font-semibold">Business Impact:</span>
+              <span className="text-[11px] font-medium opacity-80 group-hover:opacity-100">Faster response = Better retention</span>
+            </div>
+
             {/* Demo Tour Button */}
             {onToggleDemoMode && (
               <button
@@ -80,11 +96,7 @@ export function Header({
             )}
 
             {/* Simulate Review Action Button */}
-            {children}
-
-
-
-            {/* Dark / Light Mode Toggle Button with Smooth Transform Animation */}
+            {children}            {/* Dark / Light Mode Toggle Button with Smooth Transform Animation */}
             <button
               onClick={toggleTheme}
               className="relative flex items-center justify-center w-9 h-9 rounded-xl border border-slate-200 hover:border-slate-300 dark:border-gray-800 dark:hover:border-gray-700 bg-slate-100 hover:bg-slate-200/80 dark:bg-gray-900 dark:hover:bg-gray-800 text-slate-700 dark:text-gray-200 shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 overflow-hidden"

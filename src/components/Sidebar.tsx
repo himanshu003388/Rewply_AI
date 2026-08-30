@@ -16,6 +16,7 @@ export type ViewMode =
   | 'inbox'
   | 'problems'
   | 'assistant'
+  | 'social'
 
 interface SidebarProps {
   currentView: ViewMode
@@ -69,6 +70,14 @@ export function Sidebar({
       badge: null,
       badgeColor: '',
       description: 'Ask questions about your business',
+    },
+    {
+      id: 'social' as ViewMode,
+      label: 'Social Showcase',
+      icon: Sparkles,
+      badge: null,
+      badgeColor: '',
+      description: 'Generate viral LinkedIn posts',
     },
   ]
 

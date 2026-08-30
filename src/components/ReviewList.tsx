@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import { ReviewCard } from './ReviewCard'
 import { Review } from '@/types/database.types'
-import { Inbox, ChevronLeft, ChevronRight, AlertTriangle, RefreshCw } from 'lucide-react'
+import { Inbox, ChevronLeft, ChevronRight, AlertTriangle, RefreshCw, Sparkles } from 'lucide-react'
 
 interface ReviewListProps {
   reviews: Review[]
@@ -116,6 +116,23 @@ export function ReviewList({
 
   return (
     <div className="space-y-4">
+      {/* List Header Actions */}
+      <div className="flex justify-end mb-2">
+        <button 
+          onClick={() => {
+            const pendingReviews = reviews.filter(r => r.response_status === 'pending');
+            pendingReviews.forEach(r => {
+              if (!generatingIds[r.id]) onGenerateResponse(r.id);
+            });
+          }}
+          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-xs font-bold text-white shadow-md shadow-indigo-600/30 transition-all hover-lift"
+          title="Draft responses for all unanswered reviews on this page"
+        >
+          <Sparkles className="w-4 h-4" />
+          Bulk AI Draft All Pending
+        </button>
+      </div>
+
       {/* Grid of Reviews */}
       <div className={gridClass}>
         {currentReviews.map((review) => (

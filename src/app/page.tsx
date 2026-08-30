@@ -12,6 +12,7 @@ import { ReviewModal } from '@/components/ReviewModal'
 import { RecurringProblems } from '@/components/RecurringProblems'
 
 import { AskYourReviews } from '@/components/AskYourReviews'
+import { LinkedInBoast } from '@/components/LinkedInBoast'
 import { SimulateReviewButton } from '@/components/SimulateReviewButton'
 import { DemoModeGuide } from '@/components/DemoModeGuide'
 import { getReviews, updateReviewStatus } from '@/lib/api/reviews'
@@ -421,6 +422,7 @@ export default function DashboardPage() {
     'inbox': 'Review Inbox',
     'problems': 'Top Problems',
     'assistant': 'Ask AI',
+    'social': 'Social Showcase',
   }
 
   return (
@@ -525,6 +527,10 @@ export default function DashboardPage() {
                 columns="auto"
                 compact={false}
               />
+            </section>
+          ) : viewMode === 'social' ? (
+            <section className="space-y-6">
+              <LinkedInBoast reviews={allReviews} />
             </section>
           ) : (
             <section className="space-y-6">
