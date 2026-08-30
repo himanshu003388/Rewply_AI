@@ -4,7 +4,6 @@ import React from 'react'
 import {
   Sparkles,
   Database,
-  Store,
   Play,
   Sun,
   Moon,
@@ -51,7 +50,7 @@ export function Header({
             {/* Breadcrumb Navigation */}
             <div className="flex items-center gap-2">
               <div className="hidden sm:flex items-center gap-1.5 text-xs text-slate-500 dark:text-gray-400 font-medium">
-                <span className="hover:text-slate-800 dark:hover:text-gray-200">Rewply AI</span>
+                <span>Rewply AI</span>
                 <ChevronRight className="w-3.5 h-3.5 text-slate-400 dark:text-gray-600" />
               </div>
               <div className="flex items-center gap-2">
@@ -59,19 +58,19 @@ export function Header({
                   {currentViewTitle}
                 </span>
                 <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
-                  <Sparkles className="w-3 h-3" /> Gemini 2.5 AI
+                  <Sparkles className="w-3 h-3" /> Gemini 2.5
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Right Actions: Demo Mode, Simulate Review, Theme & Badges */}
+          {/* Right Actions: Demo Tour, Simulate Review, DB Status Chip & Theme Toggle */}
           <div className="flex items-center gap-2 sm:gap-2.5">
-            {/* Demo Mode Button (if provided) */}
+            {/* Demo Tour Button */}
             {onToggleDemoMode && (
               <button
                 onClick={onToggleDemoMode}
-                className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                   isDemoModeActive
                     ? 'bg-amber-500 text-slate-950 font-bold shadow-sm shadow-amber-500/20'
                     : 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30 hover:border-amber-500/50'
@@ -79,22 +78,16 @@ export function Header({
                 title="Launch 3-Minute Guided Buildathon Demo"
               >
                 <Play className="w-3.5 h-3.5 fill-current" />
-                <span>{isDemoModeActive ? 'Exit Demo' : 'Demo Tour'}</span>
+                <span className="hidden xs:inline">{isDemoModeActive ? 'Exit Tour' : 'Demo Tour'}</span>
               </button>
             )}
 
+            {/* Simulate Review Action Button */}
             {children}
-
-            {/* Active Business Badge (Desktop) */}
-            <div className="hidden xl:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-slate-100 dark:bg-gray-900/60 border border-slate-200 dark:border-white/5 text-xs text-slate-600 dark:text-gray-400">
-              <Store className="w-3.5 h-3.5 text-slate-400 dark:text-gray-500" />
-              <span className="font-medium text-slate-800 dark:text-gray-200">BurgerHub</span>
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
-            </div>
 
             {/* Supabase Connection Status Badge */}
             <div
-              className={`hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-medium ${
+              className={`hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-medium ${
                 !isUsingFallback
                   ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/50 dark:border-emerald-800/60 dark:text-emerald-300'
                   : 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/40 dark:border-indigo-800/50 dark:text-indigo-300'
@@ -102,7 +95,7 @@ export function Header({
               title={
                 !isUsingFallback
                   ? 'Connected to Live Supabase DB'
-                  : 'Running in Local Dataset Mode (Provide Supabase env keys to sync live)'
+                  : 'Running in Dataset Ready mode'
               }
             >
               <Database className="w-3.5 h-3.5" />

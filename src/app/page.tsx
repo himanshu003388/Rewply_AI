@@ -20,7 +20,7 @@ import { Review } from '@/types/database.types'
 import { SupportedTone, BusinessInsightsData } from '@/lib/ai/types'
 import { ReputationHealthScoreResult } from '@/lib/metrics/health-score'
 import { ActionStatus, AIActionItem } from '@/lib/api/actions'
-import { Sparkles, BarChart3, Inbox, Lightbulb, LayoutGrid, MessageSquare, Zap, TrendingUp } from 'lucide-react'
+import { BarChart3, Inbox, Lightbulb } from 'lucide-react'
 
 export default function DashboardPage() {
   const queryClient = useQueryClient()
@@ -506,13 +506,6 @@ export default function DashboardPage() {
         criticalReviews={counts.critical}
         actionsCount={counts.actionsCount}
         problemsCount={counts.problemsCount}
-        activeFilter={activeFilter}
-        onFilterChange={setActiveFilter}
-        selectedPlatform={selectedPlatform}
-        onPlatformChange={setSelectedPlatform}
-        isDemoModeActive={isDemoModeActive}
-        onToggleDemoMode={() => setIsDemoModeActive(!isDemoModeActive)}
-        isUsingFallback={isUsingFallback}
       />
 
       {/* 2. MAIN CONTENT WRAPPER */}
@@ -533,107 +526,23 @@ export default function DashboardPage() {
 
         {/* MAIN BODY CONTAINER */}
         <main className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-8">
-          {/* Top Title Banner & Layout Switcher Bar */}
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-white/5 pb-5">
+          {/* Top Title Banner */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-white/5 pb-5">
             <div>
               <div className="flex items-center gap-2.5 flex-wrap mb-1">
                 <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-gray-50 tracking-tight">
                   {viewTitles[viewMode]}
                 </h1>
-                <span className="flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
-                  <Sparkles className="w-3.5 h-3.5" /> Google Gemini AI
-                </span>
                 {isDemoModeActive && (
                   <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/40">
                     Demo Mode Active
                   </span>
                 )}
               </div>
-              <p className="text-xs sm:text-sm text-slate-500 dark:text-gray-400 mt-1">
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-gray-400">
                 Automated multi-channel review triage, root-cause intelligence, and instant response studio for{' '}
                 <strong className="text-slate-800 dark:text-gray-200">BurgerHub Delivery</strong>.
               </p>
-            </div>
-
-            {/* Quick View Mode Switcher Pills */}
-            <div className="flex items-center p-1 rounded-2xl bg-white dark:bg-[#0b0f19] border border-slate-200 dark:border-white/5 self-start md:self-auto flex-wrap gap-1 shadow-sm">
-              <button
-                onClick={() => setViewMode('3-column')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
-                  viewMode === '3-column'
-                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/20'
-                    : 'text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-gray-200 hover:bg-slate-100 dark:hover:bg-gray-800/50'
-                }`}
-              >
-                <LayoutGrid className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Overview Grid</span>
-              </button>
-              <button
-                onClick={() => setViewMode('inbox')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
-                  viewMode === 'inbox'
-                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/20'
-                    : 'text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-gray-200 hover:bg-slate-100 dark:hover:bg-gray-800/50'
-                }`}
-              >
-                <Inbox className="w-3.5 h-3.5" />
-                <span>Inbox</span>
-              </button>
-              <button
-                onClick={() => setViewMode('actions')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
-                  viewMode === 'actions'
-                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/20'
-                    : 'text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-gray-200 hover:bg-slate-100 dark:hover:bg-gray-800/50'
-                }`}
-              >
-                <Zap className="w-3.5 h-3.5" />
-                <span>Action Center</span>
-              </button>
-              <button
-                onClick={() => setViewMode('problems')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
-                  viewMode === 'problems'
-                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/20'
-                    : 'text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-gray-200 hover:bg-slate-100 dark:hover:bg-gray-800/50'
-                }`}
-              >
-                <BarChart3 className="w-3.5 h-3.5" />
-                <span>Problems</span>
-              </button>
-              <button
-                onClick={() => setViewMode('insights')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
-                  viewMode === 'insights'
-                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/20'
-                    : 'text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-gray-200 hover:bg-slate-100 dark:hover:bg-gray-800/50'
-                }`}
-              >
-                <Lightbulb className="w-3.5 h-3.5" />
-                <span>Insights</span>
-              </button>
-              <button
-                onClick={() => setViewMode('assistant')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
-                  viewMode === 'assistant'
-                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/20'
-                    : 'text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-gray-200 hover:bg-slate-100 dark:hover:bg-gray-800/50'
-                }`}
-              >
-                <MessageSquare className="w-3.5 h-3.5" />
-                <span>Ask AI</span>
-              </button>
-              <button
-                onClick={() => setViewMode('analytics')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
-                  viewMode === 'analytics'
-                    ? 'bg-indigo-600 text-white shadow-sm shadow-indigo-600/20'
-                    : 'text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-gray-200 hover:bg-slate-100 dark:hover:bg-gray-800/50'
-                }`}
-              >
-                <TrendingUp className="w-3.5 h-3.5" />
-                <span>Analytics</span>
-              </button>
             </div>
           </div>
 
@@ -812,25 +721,6 @@ export default function DashboardPage() {
           ) : (
             /* Dedicated Operational Analytics & Visualizations Mode */
             <section className="space-y-6">
-              <AnalyticsCharts reviews={allReviews} issues={issues} />
-            </section>
-          )}
-
-          {/* Visualizations (Always accessible below Overview Grid & Inbox modes) */}
-          {(viewMode === '3-column' || viewMode === 'inbox') && (
-            <section aria-label="Analytics & Chart Diagnostics" className="space-y-4 pt-4 border-t border-slate-200 dark:border-white/5">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-700 dark:text-gray-300">
-                  Operational Analytics &amp; Visualizations
-                </h3>
-                <button
-                  onClick={() => setViewMode('analytics')}
-                  className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold hover:underline flex items-center gap-1"
-                >
-                  <span>Expand Full Analytics</span> &rarr;
-                </button>
-              </div>
-
               <AnalyticsCharts reviews={allReviews} issues={issues} />
             </section>
           )}
