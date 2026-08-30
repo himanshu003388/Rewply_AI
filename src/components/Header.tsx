@@ -20,7 +20,7 @@ export function Header({
   const { toggleTheme, isDark } = useTheme()
 
   return (
-    <header className="sticky top-0 z-30 border-b transition-colors duration-200 border-slate-200/80 dark:border-gray-800/80 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md">
+    <header className="sticky top-0 z-30 border-b border-slate-200/80 dark:border-gray-800/80 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-3">
           {/* Logo & Brand */}

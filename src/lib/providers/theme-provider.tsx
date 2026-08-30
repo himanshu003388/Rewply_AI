@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, { createContext, useContext, useEffect, useState, useRef } from 'react'
 
 type Theme = 'dark' | 'light'
 
@@ -9,28 +9,39 @@ interface ThemeContextType {
   toggleTheme: () => void
   setTheme: (theme: Theme) => void
   isDark: boolean
+  mounted: boolean
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>('dark')
+  const [mounted, setMounted] = useState(false)
+  const transitionTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
-    // Check saved theme in localStorage or fallback to system preference
+    setMounted(true)
+    // Check saved theme in localStorage
     const savedTheme = localStorage.getItem('rewply_theme') as Theme | null
     if (savedTheme === 'light' || savedTheme === 'dark') {
       setThemeState(savedTheme)
-      applyTheme(savedTheme)
+      applyTheme(savedTheme, false)
     } else {
-      // Default to dark mode for cyber SaaS aesthetic
       setThemeState('dark')
-      applyTheme('dark')
+      applyTheme('dark', false)
     }
   }, [])
 
-  const applyTheme = (newTheme: Theme) => {
+  const applyTheme = (newTheme: Theme, withTransition: boolean = true) => {
     const root = document.documentElement
+
+    if (withTransition) {
+      if (transitionTimeoutRef.current) {
+        clearTimeout(transitionTimeoutRef.current)
+      }
+      root.classList.add('theme-transition')
+    }
+
     if (newTheme === 'dark') {
       root.classList.add('dark')
       root.classList.remove('light')
@@ -42,12 +53,18 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       root.setAttribute('data-theme', 'light')
       root.style.colorScheme = 'light'
     }
+
+    if (withTransition) {
+      transitionTimeoutRef.current = setTimeout(() => {
+        root.classList.remove('theme-transition')
+      }, 350)
+    }
   }
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme)
     localStorage.setItem('rewply_theme', newTheme)
-    applyTheme(newTheme)
+    applyTheme(newTheme, true)
   }
 
   const toggleTheme = () => {
@@ -62,6 +79,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         toggleTheme,
         setTheme,
         isDark: theme === 'dark',
+        mounted,
       }}
     >
       {children}
