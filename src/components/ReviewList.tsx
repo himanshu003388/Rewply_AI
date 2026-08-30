@@ -17,6 +17,7 @@ interface ReviewListProps {
   isLoading?: boolean
   isError?: boolean
   onRetry?: () => void
+  columns?: 1 | 2 | 3 | 'auto'
 }
 
 const ITEMS_PER_PAGE = 8
@@ -33,6 +34,7 @@ export function ReviewList({
   isLoading = false,
   isError = false,
   onRetry,
+  columns = 'auto',
 }: ReviewListProps) {
   const [currentPage, setCurrentPage] = useState(1)
 
@@ -43,10 +45,19 @@ export function ReviewList({
   const handlePrev = () => setCurrentPage((p) => Math.max(1, p - 1))
   const handleNext = () => setCurrentPage((p) => Math.min(totalPages, p + 1))
 
+  const gridClass =
+    columns === 1
+      ? 'grid grid-cols-1 gap-4'
+      : columns === 2
+      ? 'grid grid-cols-1 md:grid-cols-2 gap-4'
+      : columns === 3
+      ? 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4'
+      : 'grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4'
+
   // 1. Loading State
   if (isLoading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className={gridClass}>
         {[...Array(4)].map((_, i) => (
           <div
             key={i}
@@ -106,7 +117,7 @@ export function ReviewList({
   return (
     <div className="space-y-4">
       {/* Grid of Reviews */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className={gridClass}>
         {currentReviews.map((review) => (
           <ReviewCard
             key={review.id}
@@ -124,7 +135,7 @@ export function ReviewList({
 
       {/* Pagination Bar */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white dark:bg-[#0b0f19] border border-slate-200 dark:border-white/5 text-xs text-slate-600 dark:text-gray-400 shadow-sm">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3.5 rounded-2xl bg-white dark:bg-[#0b0f19] border border-slate-200 dark:border-white/5 text-xs text-slate-600 dark:text-gray-400 shadow-sm">
           <span>
             Showing <strong className="text-slate-900 dark:text-white">{startIndex + 1}</strong> -{' '}
             <strong className="text-slate-900 dark:text-white">{Math.min(startIndex + ITEMS_PER_PAGE, reviews.length)}</strong> of{' '}

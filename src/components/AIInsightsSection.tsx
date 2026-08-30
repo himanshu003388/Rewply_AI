@@ -3,7 +3,6 @@
 import React from 'react'
 import {
   Sparkles,
-  AlertTriangle,
   TrendingUp,
   Flame,
   CheckCircle2,
@@ -11,8 +10,8 @@ import {
   RotateCw,
   Lightbulb,
   Zap,
-  Target,
   FileCheck2,
+  AlertOctagon,
 } from 'lucide-react'
 import { BusinessInsightsData } from '@/lib/ai/types'
 
@@ -20,13 +19,149 @@ interface AIInsightsSectionProps {
   insights: BusinessInsightsData | null
   isLoading: boolean
   onGenerateInsights: () => void
+  compact?: boolean
 }
 
 export function AIInsightsSection({
   insights,
   isLoading,
   onGenerateInsights,
+  compact = false,
 }: AIInsightsSectionProps) {
+  // COMPACT MODE: Designed to auto-fit fluidly inside the 3-column Overview Grid
+  if (compact) {
+    if (isLoading) {
+      return (
+        <div className="space-y-4">
+          {[...Array(3)].map((_, i) => (
+            <div
+              key={i}
+              className="p-5 rounded-2xl bg-white dark:bg-[#0b0f19] border border-slate-200 dark:border-white/5 animate-pulse space-y-3 shadow-sm"
+            >
+              <div className="h-4 w-32 bg-slate-200 dark:bg-gray-800 rounded"></div>
+              <div className="h-6 w-full bg-slate-200 dark:bg-gray-800/80 rounded"></div>
+              <div className="h-10 w-full bg-slate-100 dark:bg-gray-800/50 rounded"></div>
+            </div>
+          ))}
+        </div>
+      )
+    }
+
+    return (
+      <div className="space-y-4">
+        {/* Compact Summary & Refresh Header */}
+        <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-50/80 to-purple-50/50 dark:from-indigo-950/40 dark:to-gray-900 border border-indigo-200/80 dark:border-indigo-500/20 shadow-sm space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30">
+              <Sparkles className="w-3 h-3" /> Gemini 2.5
+            </span>
+            <button
+              onClick={onGenerateInsights}
+              disabled={isLoading}
+              className="flex items-center gap-1 text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline disabled:opacity-50"
+            >
+              <RotateCw className="w-3 h-3" />
+              <span>Refresh</span>
+            </button>
+          </div>
+          <p className="text-xs text-slate-700 dark:text-gray-300 font-medium leading-relaxed">
+            {insights?.summary ||
+              'Aggregated feedback synthesized with AI to identify root causes and immediate operational priorities.'}
+          </p>
+        </div>
+
+        {insights && (
+          <>
+            {/* Top Priority Problem Card */}
+            {insights.top_problem && (
+              <div className="p-4 rounded-2xl bg-white dark:bg-[#0b0f19] border border-rose-200 dark:border-rose-500/20 shadow-sm space-y-2 relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-rose-500/50 to-transparent"></div>
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-rose-700 dark:text-rose-400">
+                    <Flame className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400 animate-pulse" /> Top Issue
+                  </span>
+                  <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-700 dark:bg-rose-500/20 dark:text-rose-300 border border-rose-300 dark:border-rose-500/40">
+                    {insights.top_problem.severity || 'Critical'}
+                  </span>
+                </div>
+                <h4 className="text-xs font-bold text-slate-900 dark:text-white">
+                  {insights.top_problem.issue}
+                </h4>
+                <p className="text-[11px] text-slate-600 dark:text-gray-400 leading-relaxed">
+                  {insights.top_problem.reason}
+                </p>
+              </div>
+            )}
+
+            {/* Strategic Recommended Actions Card */}
+            {insights.recommended_actions && insights.recommended_actions.length > 0 && (
+              <div className="p-4 rounded-2xl bg-white dark:bg-[#0b0f19] border border-slate-200 dark:border-white/5 shadow-sm space-y-2.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-gray-400 flex items-center gap-1">
+                  <Lightbulb className="w-3.5 h-3.5 text-amber-500" /> Action Roadmap
+                </span>
+                <div className="space-y-2">
+                  {insights.recommended_actions.slice(0, 3).map((rec, idx) => (
+                    <div
+                      key={idx}
+                      className="p-2.5 rounded-xl bg-slate-50 dark:bg-[#06080e] border border-slate-200/80 dark:border-white/5 space-y-1"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-slate-800 dark:text-gray-200 capitalize">
+                          {rec.priority || 'P1'} Priority
+                        </span>
+                        <span className="text-[9px] font-semibold px-1.5 py-0.2 rounded bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 capitalize">
+                          {rec.expected_impact} Impact
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-700 dark:text-gray-300 leading-relaxed font-medium">
+                        {rec.action}
+                      </p>
+                      <p className="text-[10px] text-slate-500 dark:text-gray-400 leading-relaxed">
+                        {rec.reason}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Emerging Problem & Positive Trend Chips */}
+            <div className="grid grid-cols-1 gap-2">
+              {insights.emerging_problem && (
+                <div className="p-3 rounded-2xl bg-amber-50/50 dark:bg-[#0b0f19] border border-amber-200 dark:border-amber-500/20 space-y-1">
+                  <span className="text-[10px] font-bold uppercase text-amber-700 dark:text-amber-400 flex items-center gap-1">
+                    <AlertOctagon className="w-3 h-3" /> Emerging Pattern
+                  </span>
+                  <p className="text-xs font-bold text-slate-900 dark:text-white">
+                    {insights.emerging_problem.issue}
+                  </p>
+                  <p className="text-[11px] text-slate-600 dark:text-gray-400">
+                    {insights.emerging_problem.evidence}
+                  </p>
+                </div>
+              )}
+
+              {insights.positive_trend && (
+                <div className="p-3 rounded-2xl bg-emerald-50/50 dark:bg-[#0b0f19] border border-emerald-200 dark:border-emerald-500/20 space-y-1">
+                  <span className="text-[10px] font-bold uppercase text-emerald-700 dark:text-emerald-400 flex items-center gap-1">
+                    <TrendingUp className="w-3 h-3" /> Positive Driver
+                  </span>
+                  <p className="text-xs font-bold text-slate-900 dark:text-white">
+                    {insights.positive_trend.topic}
+                  </p>
+                  <p className="text-[11px] text-slate-600 dark:text-gray-400">
+                    {insights.positive_trend.evidence}
+                  </p>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+    )
+  }
+
+  // FULL-PAGE MODE: Rich 3-column executive diagnostic dashboard
   return (
     <div className="space-y-6">
       {/* Executive Header Banner */}
@@ -36,7 +171,7 @@ export function AIInsightsSection({
             <span className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30">
               <Sparkles className="w-3.5 h-3.5" /> Gemini Executive Intelligence
             </span>
-            <span className="text-xs text-slate-500 dark:text-gray-400">• Cross-Platform Intelligence</span>
+            <span className="text-xs text-slate-500 dark:text-gray-400">• Cross-Platform Synthesis</span>
           </div>
 
           <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">
@@ -81,15 +216,15 @@ export function AIInsightsSection({
 
       {insights && !isLoading && (
         <div className="space-y-6 animate-in fade-in duration-300">
-          {/* 3-Column Diagnostic Summary */}
+          {/* Diagnostic 3-Card Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* 1. Most Important Problem */}
+            {/* 1. Top Problem */}
             <div className="p-5 rounded-3xl bg-white dark:bg-[#0b0f19] border border-rose-200 dark:border-rose-500/20 shadow-sm flex flex-col justify-between space-y-3 relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-rose-500/50 to-transparent"></div>
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-rose-700 dark:text-rose-400">
-                    <Flame className="w-4 h-4 text-rose-600 dark:text-rose-400" /> Top Priority Problem
+                    <Flame className="w-4 h-4 text-rose-600 dark:text-rose-400 animate-pulse" /> Top Priority Problem
                   </span>
                   <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-700 dark:bg-rose-500/20 dark:text-rose-300 border border-rose-300 dark:border-rose-500/40">
                     {insights.top_problem.severity || 'Critical'}
@@ -105,22 +240,23 @@ export function AIInsightsSection({
                 </p>
               </div>
 
-              <div className="pt-2 border-t border-rose-200 dark:border-rose-500/20 flex items-center gap-1.5 text-[11px] text-rose-700 dark:text-rose-300/80 font-medium">
-                <AlertTriangle className="w-3.5 h-3.5" />
-                <span>Primary driver of customer churn</span>
+              <div className="pt-3 border-t border-slate-200/80 dark:border-white/5 flex items-center justify-between text-xs">
+                <span className="text-[11px] text-slate-500 dark:text-gray-400">Severity Status:</span>
+                <span className="font-bold text-rose-700 dark:text-rose-400 capitalize">
+                  {insights.top_problem.severity || 'High Risk'}
+                </span>
               </div>
             </div>
 
             {/* 2. Emerging Problem */}
-            <div className="p-5 rounded-3xl bg-white dark:bg-[#0b0f19] border border-amber-200 dark:border-amber-500/20 shadow-sm flex flex-col justify-between space-y-3 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-amber-500/50 to-transparent"></div>
+            <div className="p-5 rounded-3xl bg-white dark:bg-[#0b0f19] border border-amber-200 dark:border-amber-500/20 shadow-sm flex flex-col justify-between space-y-3">
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
-                    <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400" /> Emerging Problem
+                    <AlertOctagon className="w-4 h-4 text-amber-600 dark:text-amber-400" /> Emerging Trend
                   </span>
-                  <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 border border-amber-300 dark:border-amber-500/30">
-                    Rising Pattern
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30">
+                    Rising
                   </span>
                 </div>
 
@@ -133,22 +269,20 @@ export function AIInsightsSection({
                 </p>
               </div>
 
-              <div className="pt-2 border-t border-amber-200 dark:border-amber-500/20 flex items-center gap-1.5 text-[11px] text-amber-700 dark:text-amber-300/80 font-medium">
-                <Target className="w-3.5 h-3.5" />
-                <span>Requires proactive operational adjustment</span>
+              <div className="pt-3 border-t border-slate-200/80 dark:border-white/5 text-[11px] text-slate-500 dark:text-gray-400">
+                Pattern: <strong className="text-slate-800 dark:text-gray-200">Requires Monitoring</strong>
               </div>
             </div>
 
-            {/* 3. Positive Trend */}
-            <div className="p-5 rounded-3xl bg-white dark:bg-[#0b0f19] border border-emerald-200 dark:border-emerald-500/20 shadow-sm flex flex-col justify-between space-y-3 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-emerald-500/50 to-transparent"></div>
+            {/* 3. Positive Momentum Driver */}
+            <div className="p-5 rounded-3xl bg-white dark:bg-[#0b0f19] border border-emerald-200 dark:border-emerald-500/20 shadow-sm flex flex-col justify-between space-y-3">
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
-                    <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> Positive Trend & Strength
+                    <TrendingUp className="w-4 h-4 text-emerald-600 dark:text-emerald-400" /> Positive Momentum
                   </span>
-                  <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-500/30">
-                    Brand Moat
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30">
+                    Strengths
                   </span>
                 </div>
 
@@ -161,89 +295,57 @@ export function AIInsightsSection({
                 </p>
               </div>
 
-              <div className="pt-2 border-t border-emerald-200 dark:border-emerald-500/20 flex items-center gap-1.5 text-[11px] text-emerald-700 dark:text-emerald-300/80 font-medium">
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                <span>Key driver of organic positive sentiment</span>
+              <div className="pt-3 border-t border-slate-200/80 dark:border-white/5 text-[11px] text-slate-500 dark:text-gray-400">
+                Core Driver: <strong className="text-emerald-700 dark:text-emerald-400">Customer Delight</strong>
               </div>
             </div>
           </div>
 
-          {/* Actionable Recommendations Section */}
-          <div className="p-6 rounded-3xl bg-white dark:bg-[#0b0f19] border border-slate-200 dark:border-white/5 space-y-4 shadow-sm">
+          {/* Operational Action Roadmap */}
+          <div className="p-6 rounded-3xl bg-white dark:bg-[#0b0f19] border border-slate-200 dark:border-white/5 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
-                  <Lightbulb className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-bold text-slate-900 dark:text-white tracking-tight">Prioritized Action Plan</h3>
-                  <p className="text-xs text-slate-500 dark:text-gray-400">Direct operational countermeasures backed by review data</p>
-                </div>
+              <div>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                  <FileCheck2 className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+                  Prioritized Operational Roadmap
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-gray-400 mt-0.5">
+                  Direct action items generated by Gemini to resolve recurring complaints
+                </p>
               </div>
-
-              <span className="text-xs font-semibold text-slate-500 dark:text-gray-400 flex items-center gap-1">
-                <FileCheck2 className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                <span>{insights.recommended_actions.length} Action Items</span>
-              </span>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
-              {insights.recommended_actions.map((item, idx) => {
-                const isCritical = item.priority === 'critical'
-                const isHigh = item.priority === 'high'
-
-                const priorityBadge = isCritical ? (
-                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-md bg-rose-500/10 text-rose-700 dark:bg-rose-500/20 dark:text-rose-300 border border-rose-300 dark:border-rose-500/40 uppercase">
-                    P1 Critical
-                  </span>
-                ) : isHigh ? (
-                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-md bg-amber-500/10 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300 border border-amber-300 dark:border-amber-500/30 uppercase">
-                    P2 High
-                  </span>
-                ) : (
-                  <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-md bg-indigo-500/10 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30 uppercase">
-                    P3 Medium
-                  </span>
-                )
-
-                const impactBadge =
-                  item.expected_impact === 'high' ? (
-                    <span className="text-[10px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-300 dark:border-emerald-500/20">
-                      High Impact
-                    </span>
-                  ) : (
-                    <span className="text-[10px] font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-200 dark:border-indigo-500/20">
-                      Medium Impact
-                    </span>
-                  )
-
-                return (
-                  <div
-                    key={idx}
-                    className="p-5 rounded-2xl bg-slate-50 dark:bg-[#06080e] border border-slate-200 dark:border-white/5 flex flex-col justify-between space-y-3 hover:border-slate-300 dark:hover:border-white/10 transition-colors shadow-sm"
-                  >
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between gap-2">
-                        {priorityBadge}
-                        {impactBadge}
-                      </div>
-
-                      <h5 className="text-xs font-bold text-slate-900 dark:text-white leading-snug">
-                        {item.action}
-                      </h5>
-
-                      <p className="text-[11px] text-slate-600 dark:text-gray-400 leading-relaxed font-normal">
-                        <strong className="text-slate-800 dark:text-gray-300">Rationale:</strong> {item.reason}
-                      </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {insights.recommended_actions?.map((rec, idx) => (
+                <div
+                  key={idx}
+                  className="p-4 rounded-2xl bg-slate-50 dark:bg-[#06080e] border border-slate-200 dark:border-white/5 space-y-2.5 flex flex-col justify-between"
+                >
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30">
+                        {rec.priority || 'P1'}
+                      </span>
+                      <span className="text-[10px] font-medium text-slate-400 dark:text-gray-500 capitalize">
+                        Impact: {rec.expected_impact || 'High'}
+                      </span>
                     </div>
 
-                    <div className="pt-2 border-t border-slate-200 dark:border-white/5 flex items-center justify-between text-[10px] text-slate-500 dark:text-gray-500">
-                      <span>Target: Operations & Fleet</span>
-                      <span className="font-semibold text-indigo-600 dark:text-indigo-400">Action #{idx + 1}</span>
-                    </div>
+                    <h4 className="text-xs font-bold text-slate-900 dark:text-white">
+                      {rec.action}
+                    </h4>
+
+                    <p className="text-xs text-slate-600 dark:text-gray-300 leading-relaxed font-normal">
+                      {rec.reason}
+                    </p>
                   </div>
-                )
-              })}
+
+                  <div className="pt-2 border-t border-slate-200 dark:border-white/5 flex items-center gap-1.5 text-[11px] text-emerald-700 dark:text-emerald-400 font-semibold">
+                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                    <span>Impact Tier: {rec.expected_impact}</span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

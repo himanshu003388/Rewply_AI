@@ -525,7 +525,7 @@ export default function DashboardPage() {
         </Header>
 
         {/* MAIN BODY CONTAINER */}
-        <main className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-8">
+        <main className="w-full max-w-[1760px] mx-auto px-3 sm:px-6 lg:px-8 xl:px-10 pt-4 sm:pt-6 space-y-6 sm:space-y-8">
           {/* Top Title Banner */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-white/5 pb-5">
             <div>
@@ -569,11 +569,11 @@ export default function DashboardPage() {
 
           {/* MAIN VIEW CONTENT SWITCHER */}
           {viewMode === '3-column' ? (
-            /* SaaS 3-Column Command Center Grid */
+            /* Fluid SaaS 3-Column Command Center Grid */
             <section className="space-y-8">
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                {/* LEFT COLUMN: Review Inbox (5 cols) */}
-                <div className="lg:col-span-5 space-y-4">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                {/* LEFT COLUMN: Review Inbox (5 cols on xl, full on lg) */}
+                <div className="lg:col-span-12 xl:col-span-5 space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="p-1.5 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
@@ -611,11 +611,12 @@ export default function DashboardPage() {
                     isLoading={isReviewsLoading}
                     isError={isReviewsError}
                     onRetry={() => refetchReviews()}
+                    columns={1}
                   />
                 </div>
 
-                {/* MIDDLE COLUMN: Recurring Problems (4 cols) */}
-                <div className="lg:col-span-4 space-y-4">
+                {/* MIDDLE COLUMN: Recurring Problems (4 cols on xl, 6 cols on lg) */}
+                <div className="lg:col-span-6 xl:col-span-4 space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="p-1.5 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
@@ -632,11 +633,13 @@ export default function DashboardPage() {
                     issues={recurringIssuesData || []}
                     onSelectReview={handleOpenDetailsById}
                     isLoading={isRecurringIssuesLoading}
+                    columns={1}
+                    compact={true}
                   />
                 </div>
 
-                {/* RIGHT COLUMN: AI Insights / Recommended Actions (3 cols) */}
-                <div className="lg:col-span-3 space-y-4">
+                {/* RIGHT COLUMN: AI Insights (3 cols on xl, 6 cols on lg) */}
+                <div className="lg:col-span-6 xl:col-span-3 space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="p-1.5 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
@@ -651,6 +654,7 @@ export default function DashboardPage() {
                     insights={insightsData}
                     isLoading={isGeneratingInsights}
                     onGenerateInsights={handleGenerateInsights}
+                    compact={true}
                   />
                 </div>
               </div>
@@ -687,6 +691,7 @@ export default function DashboardPage() {
                 isLoading={isReviewsLoading}
                 isError={isReviewsError}
                 onRetry={() => refetchReviews()}
+                columns="auto"
               />
             </section>
           ) : viewMode === 'problems' ? (
@@ -695,6 +700,8 @@ export default function DashboardPage() {
                 issues={recurringIssuesData || []}
                 onSelectReview={handleOpenDetailsById}
                 isLoading={isRecurringIssuesLoading}
+                columns="auto"
+                compact={false}
               />
             </section>
           ) : viewMode === 'insights' ? (
@@ -703,6 +710,7 @@ export default function DashboardPage() {
                 insights={insightsData}
                 isLoading={isGeneratingInsights}
                 onGenerateInsights={handleGenerateInsights}
+                compact={false}
               />
             </section>
           ) : viewMode === 'actions' ? (
